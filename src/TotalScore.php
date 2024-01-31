@@ -13,17 +13,15 @@ ini_set('xdebug.var_display_max_depth', -1);
 
 class TotalScore
 {
-    public function getIGolf()
+    public function getIGolf($url)
     {
-        // Guzzleを使用してWebページを取得
-        $url0 = "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a";
-        $url1 = "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre/leaderboard";
+        // Usage: getIGolf("https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a")
+        $url1 = preg_replace("/#\/landscape-a/", "/leaderboard", $url);
 
         $client = new Client(['cookies' => true]);
-        $response = $client->request('GET', $url0);
+        $response = $client->request('GET', $url);
         $response = $client->request('GET', $url1);
 
-        // ページのコンテンツをDomCrawlerに渡す
         $html = $response->getBody()->getContents();
         $dom = new Crawler($html);
 
@@ -43,16 +41,11 @@ class TotalScore
         return $scores;
     }
 
-    public function getMarshalI()
+    public function getMarshalI($url)
     {
-        $url = "https://marshal-i.com/ops/score/oakvillage_20231219_5d0e4f2f";
-        $url = "https://marshal-i.com/ops/score/kazusamona_20240123_4fcf31a0";
-        $url = "https://marshal-i.com/ops/score/oakvillage_20231031_7bf14538";
-
         $client = new Client(['cookies' => true]);
         $response = $client->request('GET', $url);
 
-        // ページのコンテンツをDomCrawlerに渡す
         $html = $response->getBody()->getContents();
         $dom = new Crawler($html);
 
