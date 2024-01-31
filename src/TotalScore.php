@@ -78,64 +78,50 @@ class TotalScore
             $par = $table->filter("thead tr")->eq(1)->filter("th")->eq($i)->text();
             $pars[] = intval($par);
         }
+        $all_par = array_sum($pars);
 
-        $ss = [];
+        $scores = [];
         for($i = 0;$i < $count_members;$i++) {
-            echo $name = $tr->eq($i)->filter("td")->eq(1)->text();
+            $name = $tr->eq($i)->filter("td")->eq(1)->text();
             $td = $tr->eq($i)->filter("td");
-            $scores = [];
+            $_scores = [];
             for($j = 0;$j < 20;$j++) {
-                $scores[] = intval($td->eq(3 + $j)->filter("span")->eq(0)->attr("data-par"));
+                $_scores[] = intval($td->eq(3 + $j)->filter("span")->eq(0)->attr("data-par"));
             }
-            unset($scores[9]);
-            unset($scores[19]);
+            unset($_scores[9]);
+            unset($_scores[19]);
             // add par
-            $scores0 = array_values($scores);
-            $scores = array_map(function ($e, $index) use ($pars) {
-                return $e + $pars[$index];
-            }, $scores0, range(0, 17));
+            $gross = 0;
+            $_scores = array_values($_scores);
+            $score = array_map(function ($e, $index) use ($pars, &$gross) {
+                $gross += $e + $pars[$index];
+                $prize = $this->getPrize(diff:$e);
+                return[
+                    "hole" => $index + 1,
+                    "score" => $e + $pars[$index],
+                    "prize" => $prize,
+                ];
+            }, $_scores, range(0, 17));
 
-            $ss[] = [
-                "name" => $name,
-                "scores" => $scores
-            ];
+            $scores[] = compact("name", "score", "gross");
         }
 
         $results = [
             "course" => $course,
             "date" => $date,
-            "scores" => []
+            "par" => $all_par,
+            "scores" => $scores,
         ];
-        for($member_index = 0;$member_index < $count_members;$member_index++) {
-            $r = [];
-            $s = [];
-            $gross = 0;
-            foreach($pars as $index => $p) {
-                $prize = $this->getPrize($p, $ss[$member_index]["scores"][$index]);
-                $s[] = [
-                    "hole" => $index + 1,
-                    "score" => $ss[$member_index]["scores"][$index],
-                    "prize" => $prize,
-                ];
-                $gross += $ss[$member_index]["scores"][$index];
-            }
-            $r = [
-                "name" => $ss[$member_index]["name"],
-                "scores" => $s,
-                "gross" => $gross
-            ];
-            $results["scores"][] = $r;
 
-        }
         return $results;
     }
 
-    public function getPrize($par, $score)
+    public function getPrize($diff = 0, $score = 0)
     {
         if($score === 1) {
             return "HOLEINONE";
         }
-        switch($score - $par) {
+        switch($diff) {
             case -1:
                 return "BIRDIE";
             case -2:
@@ -147,9 +133,9 @@ class TotalScore
             case 1:
                 return "BOGEY";
             case 2:
-                return "DOUBLE BOGEY";
+                return "DOUBLEBOGEY";
             case 3:
-                return "TROUBLE BOGEY";
+                return "TRIPLEBOGEY";
             default:
                 return "";
         }
