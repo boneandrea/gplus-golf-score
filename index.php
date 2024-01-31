@@ -37,7 +37,96 @@ class TotalScore{
                 "gross"=>intval($score->filter("td")->eq(28)->text())
             ];
         }
-        var_dump(json_encode($scores,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+        return $scores;
+    }
+
+    public function getMarshalI(){
+        $url0="https://marshal-i.com/ops/score/oakvillage_20231219_5d0e4f2f";
+
+        $client = new Client(['cookies' => true]);
+        $jar = new CookieJar;
+        $response = $client->request('GET', $url0);
+
+        // ページのコンテンツをDomCrawlerに渡す
+        $html = $response->getBody()->getContents();
+        $dom = new Crawler($html);
+
+        $tr=$dom->filter("#table_start tr");
+
+        $count_members=($tr->count()-4)/2;
+        $_pars=$tr->eq(2)->filter("td");
+
+        $pars=[];
+        for($i=1;$i<20;$i++){
+            $par=$_pars->eq($i);
+            $pars[]=intval($par->text());
+        }
+        unset($pars[9]);
+        $pars=array_values($pars);
+
+        //var_dump(json_encode($pars));
+        $ss=[];
+        for($i=0;$i<$count_members;$i++){
+            $name=$tr->eq($i*2+3)->filter("td")->eq(0)->text();
+            $td=$tr->eq($i*2+3)->filter("td");
+            $scores=[];
+            for($j=1;$j<20;$j++){
+                $score=$td->eq($j);
+                $scores[]=intval($score->text());
+            }
+            unset($scores[9]);
+            $scores=array_values($scores);
+            $ss[]=[
+                "name"=>$name,
+                "scores"=>$scores
+            ];
+        }
+
+        $results=[];
+        for($member_index=0;$member_index<$count_members;$member_index++){
+            $r=[];
+            $s=[];
+            $gross=0;
+            foreach($pars as $index=>$p){
+                $prize=$this->getPrize($p,$ss[$member_index]["scores"][$index]);
+                $s[]=[
+                    "hole"=>$index+1,
+                    "score"=>$ss[$member_index]["scores"][$index],
+                    "prize"=>$prize,
+                ];
+                $gross+=$ss[$member_index]["scores"][$index];
+            }
+            $r=[
+                "name"=>$ss[$member_index]["name"],
+                "scores"=>$s,
+                "gross"=>$gross
+            ];
+            $results[]=$r;
+
+        }
+        return $results;
+    }
+
+    public function getPrize($par, $score){
+        if($score === 1) return "HOLEINONE";
+        switch($score - $par){
+        case -1:
+            return "BIRDIE";
+        case -2:
+            return "EAGLE";
+        case -3:
+            return "ALBATROSS";
+        case 0:
+            return "PAR";
+        case 1:
+            return "BOGEY";
+        case 2:
+            return "DOUBLE BOGEY";
+        case 3:
+            return "TROUBLE BOGEY";
+        default:
+            return "";
+        }
     }
 
     public function storeScores(){
@@ -45,5 +134,8 @@ class TotalScore{
 }
 
 $x=new TotalScore();
-$x->getIGolf();
+$r=$x->getIGolf();
+var_dump(json_encode($r,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+$r=$x->getMarshalI();
+var_dump(json_encode($r,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
 $x->storeScores();
