@@ -1,4 +1,5 @@
 <?php
+
 namespace Golf;
 
 require "vendor/autoload.php";
@@ -10,14 +11,15 @@ ini_set('xdebug.var_display_max_children', -1);
 ini_set('xdebug.var_display_max_data', -1);
 ini_set('xdebug.var_display_max_depth', -1);
 
-class TotalScore{
-    public function getIGolf(){
+class TotalScore
+{
+    public function getIGolf()
+    {
         // Guzzleを使用してWebページを取得
-        $url0="https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a";
-        $url1="https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre/leaderboard";
+        $url0 = "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a";
+        $url1 = "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre/leaderboard";
 
         $client = new Client(['cookies' => true]);
-        $jar = new CookieJar;
         $response = $client->request('GET', $url0);
         $response = $client->request('GET', $url1);
 
@@ -25,126 +27,135 @@ class TotalScore{
         $html = $response->getBody()->getContents();
         $dom = new Crawler($html);
 
-        $tr=$dom->filter(".ui-table-view tr");
+        $tr = $dom->filter(".ui-table-view tr");
 
-        $count_members=$tr->count()-2;
+        $count_members = $tr->count() - 2;
 
-        $scores=[];
+        $scores = [];
 
-        for($i=0;$i<$count_members;$i++){
-            $score=$tr->eq($i+2);
-            $scores[]=[
-                "name"=>$score->filter("td")->eq(1)->text(),
-                "gross"=>intval($score->filter("td")->eq(28)->text())
+        for($i = 0;$i < $count_members;$i++) {
+            $score = $tr->eq($i + 2);
+            $scores[] = [
+                "name" => $score->filter("td")->eq(1)->text(),
+                "gross" => intval($score->filter("td")->eq(28)->text())
             ];
         }
         return $scores;
     }
 
-    public function getMarshalI(){
-        $url="https://marshal-i.com/ops/score/oakvillage_20231219_5d0e4f2f";
-        $url="https://marshal-i.com/ops/score/kazusamona_20240123_4fcf31a0";
+    public function getMarshalI()
+    {
+        $url = "https://marshal-i.com/ops/score/oakvillage_20231219_5d0e4f2f";
+        $url = "https://marshal-i.com/ops/score/kazusamona_20240123_4fcf31a0";
+        $url = "https://marshal-i.com/ops/score/oakvillage_20231031_7bf14538";
 
         $client = new Client(['cookies' => true]);
-        $jar = new CookieJar;
         $response = $client->request('GET', $url);
 
         // ページのコンテンツをDomCrawlerに渡す
         $html = $response->getBody()->getContents();
         $dom = new Crawler($html);
 
-        $tr=$dom->filter("#table_start tr");
+        $table = $dom->filter("table.holebyholeTable")->eq(0);
+        $tr = $table->filter("tbody tr");
 
-        $d=$dom->filter(".panel-heading")->eq(0)->text();
-        if(preg_match("/(.*)プレー日：(.*)/", $d, $m)){
-            $course=trim($m[1]);
-            $date=date_parse_from_format("Y年m月d日",trim($m[2]));
-            $date=sprintf("%s/%s/%s",
-                    $date["year"],
-                    $date["month"],
-                    $date["day"],
+        $d = $dom->filter(".panel-heading")->eq(0)->text();
+        if(preg_match("/(.*)プレー日：(.*)/", $d, $m)) {
+            $course = trim($m[1]);
+            $date = date_parse_from_format("Y年m月d日", trim($m[2]));
+            $date = sprintf(
+                "%s/%s/%s",
+                $date["year"],
+                $date["month"],
+                $date["day"],
             );
         }
 
-        $count_members=($tr->count()-4)/2;
-        $_pars=$tr->eq(2)->filter("td");
+        $count_members = $tr->count() - 1;
 
-        $pars=[];
-        for($i=1;$i<20;$i++){
-            $par=$_pars->eq($i);
-            $pars[]=intval($par->text());
+        $pars = [];
+        for($i = 0;$i < 18;$i++) {
+            $par = $table->filter("thead tr")->eq(1)->filter("th")->eq($i)->text();
+            $pars[] = intval($par);
         }
-        unset($pars[9]);
-        $pars=array_values($pars);
 
-        $ss=[];
-        for($i=0;$i<$count_members;$i++){
-            $name=$tr->eq($i*2+3)->filter("td")->eq(0)->text();
-            $td=$tr->eq($i*2+3)->filter("td");
-            $scores=[];
-            for($j=1;$j<20;$j++){
-                $score=$td->eq($j);
-                $scores[]=intval($score->text());
+        $ss = [];
+        for($i = 0;$i < $count_members;$i++) {
+            echo $name = $tr->eq($i)->filter("td")->eq(1)->text();
+            $td = $tr->eq($i)->filter("td");
+            $scores = [];
+            for($j = 0;$j < 20;$j++) {
+                $scores[] = intval($td->eq(3 + $j)->filter("span")->eq(0)->attr("data-par"));
             }
             unset($scores[9]);
-            $scores=array_values($scores);
-            $ss[]=[
-                "name"=>$name,
-                "scores"=>$scores
+            unset($scores[19]);
+            // add par
+            $scores0 = array_values($scores);
+            $scores = array_map(function ($e, $index) use ($pars) {
+                return $e + $pars[$index];
+            }, $scores0, range(0, 17));
+
+            $ss[] = [
+                "name" => $name,
+                "scores" => $scores
             ];
         }
 
-        $results=[
-            "course"=>$course,
-            "date"=>$date,
-            "scores"=>[]
+        $results = [
+            "course" => $course,
+            "date" => $date,
+            "scores" => []
         ];
-        for($member_index=0;$member_index<$count_members;$member_index++){
-            $r=[];
-            $s=[];
-            $gross=0;
-            foreach($pars as $index=>$p){
-                $prize=$this->getPrize($p,$ss[$member_index]["scores"][$index]);
-                $s[]=[
-                    "hole"=>$index+1,
-                    "score"=>$ss[$member_index]["scores"][$index],
-                    "prize"=>$prize,
+        for($member_index = 0;$member_index < $count_members;$member_index++) {
+            $r = [];
+            $s = [];
+            $gross = 0;
+            foreach($pars as $index => $p) {
+                $prize = $this->getPrize($p, $ss[$member_index]["scores"][$index]);
+                $s[] = [
+                    "hole" => $index + 1,
+                    "score" => $ss[$member_index]["scores"][$index],
+                    "prize" => $prize,
                 ];
-                $gross+=$ss[$member_index]["scores"][$index];
+                $gross += $ss[$member_index]["scores"][$index];
             }
-            $r=[
-                "name"=>$ss[$member_index]["name"],
-                "scores"=>$s,
-                "gross"=>$gross
+            $r = [
+                "name" => $ss[$member_index]["name"],
+                "scores" => $s,
+                "gross" => $gross
             ];
-            $results["scores"][]=$r;
+            $results["scores"][] = $r;
 
         }
         return $results;
     }
 
-    public function getPrize($par, $score){
-        if($score === 1) return "HOLEINONE";
-        switch($score - $par){
-        case -1:
-            return "BIRDIE";
-        case -2:
-            return "EAGLE";
-        case -3:
-            return "ALBATROSS";
-        case 0:
-            return "PAR";
-        case 1:
-            return "BOGEY";
-        case 2:
-            return "DOUBLE BOGEY";
-        case 3:
-            return "TROUBLE BOGEY";
-        default:
-            return "";
+    public function getPrize($par, $score)
+    {
+        if($score === 1) {
+            return "HOLEINONE";
+        }
+        switch($score - $par) {
+            case -1:
+                return "BIRDIE";
+            case -2:
+                return "EAGLE";
+            case -3:
+                return "ALBATROSS";
+            case 0:
+                return "PAR";
+            case 1:
+                return "BOGEY";
+            case 2:
+                return "DOUBLE BOGEY";
+            case 3:
+                return "TROUBLE BOGEY";
+            default:
+                return "";
         }
     }
 
-    public function storeScores(){
+    public function storeScores()
+    {
     }
 }
