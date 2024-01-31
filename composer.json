@@ -1,0 +1,18 @@
+{
+    "name": "banchou/gp_score",
+    "autoload": {
+        "psr-4": {
+            "Banchou\\GpScore\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "boneandrea",
+            "email": "bone.andrea.anthrax@gmail.com"
+        }
+    ],
+    "require": {
+        "symfony/dom-crawler": "^7.0",
+        "guzzlehttp/guzzle": "^7.8"
+    }
+}
