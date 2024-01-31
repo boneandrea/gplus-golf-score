@@ -9,6 +9,7 @@ from time import sleep
 import pytest
 import json
 import os
+import sys
 import re
 """
 Run:
@@ -18,13 +19,6 @@ $ pytest -sv test.py # print()あり テスト項目表示あり
 $ pytest -v test.py # print()なし テスト項目表示あり
 $ pytest test.py # silent
 """
-
-ROOT = "http://18.180.67.181"
-ENCODER = "http://18.179.171.174"
-LOGINPAGE = "%s/index" % ROOT
-USERNAME = "administrator"
-PASSWORD = ""
-CID = "64e2b9df4e64860b486df009"
 
 driver = None
 
@@ -43,12 +37,27 @@ def init_browser():
     ).install()), options=options)  # 自動的にSeleniumとChromeバージョンを一致させる
 
 
-def get_scores():
+def get_par():
     init_browser()
     driver.get(
         "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a")
-    driver.get(
-        "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre/leaderboard")
+    wait = WebDriverWait(driver, timeout=5)
+    table = driver.find_elements(By.CSS_SELECTOR, ".sheet table")[0]
+    tr = table.find_elements(By.TAG_NAME, "tr")
+    td = tr[3].find_elements(By.TAG_NAME, "td")
+    par = []
+    for t in td:
+        par.append(int(t.get_attribute("innerText")))
+
+    par.pop(9)
+    par.pop(18)
+    return par
+
+
+def get_scores(url):
+    init_browser()
+    driver.get(url)
+    driver.get(url.replace("#/landscape-a", "/leaderboard"))
     wait = WebDriverWait(driver, timeout=5)
     show_score_button = driver.find_elements(By.CSS_SELECTOR, ".show-score")
     show_score_button[0].click()
@@ -64,6 +73,7 @@ def get_scores():
         "date": basic_info["date"],
         "scores": []
     }
+    par = get_par()
 
     for i in range(0, num_player):
         tds = tr[i+2].find_elements(By.TAG_NAME, "td")
@@ -81,17 +91,45 @@ def get_scores():
             "score": []
         }
         name = ""
+
         for i, s in enumerate(score):
             if i == 0:
                 data["name"] = score[i]
             if i > 0 and i < 19:
-                data["score"].append({"hole": i, "score": int(score[i])})
+                data["score"].append({
+                    "hole": i,
+                    "score": int(score[i]),
+                    "prize": prize(par[i-1], int(score[i]))
+                })
             if i == 19:
                 data["gross"] = int(score[i])
 
         scores["scores"].append(data)
 
     return scores
+
+
+def prize(par, score):
+    if score == 1:
+        return "HOLEINONE"
+    diff = score-par
+    match diff:
+        case -3:
+            return "ALBATROSS"
+        case -2:
+            return "EAGLE"
+        case -1:
+            return "BOGEY"
+        case 0:
+            return "PAR"
+        case 1:
+            return "BOGEY"
+        case 2:
+            return "DOUBLEBOGEY"
+        case 3:
+            return "TRIPLEBOGEY"
+        case _:
+            return ""
 
 
 def get_basic_info():
@@ -118,16 +156,9 @@ def get_basic_info():
         "course": course,
         "date": date
     }
-    # print(html)
-    # html = table[1].get_attribute("innerText")
-    # print(html)
-    # html = table[2].get_attribute("innerText")
-    # print(html)
-    # html = table[3].get_attribute("innerText")
-    # print(html)
 
 
-scores = get_scores()
+scores = get_scores(sys.argv[1])
 print(json.dumps(scores, indent=2, ensure_ascii=False))
 driver.quit()
 
@@ -276,28 +307,28 @@ class Test_動画をアップロードする():
         sleep(1)
         items = driver.find_elements(By.CLASS_NAME, "vframeListAdminBG")
         assert len(items) > 0
-        info = items[0].find_elements(
+        info=items[0].find_elements(
             By.CSS_SELECTOR, "div div div.vframeListInfoAdmin")[0]
-        category = info.find_elements(
+        category=info.find_elements(
             By.CSS_SELECTOR, "span.categoryNamePanel")[0].text
         assert category == "【カテゴリ未設定】"
 
-        title = info.find_elements(
+        title=info.find_elements(
             By.CSS_SELECTOR, "a div")[0].text
         assert title == "title"
 
-        description = info.find_elements(
+        description=info.find_elements(
             By.CSS_SELECTOR, "a div")[1].text
         assert description == "description"
 
-        username = info.find_elements(
+        username=info.find_elements(
             By.CSS_SELECTOR, ".commonUnameIc a")[0].text
         assert username == "administrator"
 
     def test_動画をアップロードする_MY動画に進捗状況が出る(self):
         self._動画をアップロードする()
-        wait = WebDriverWait(driver, timeout=5)
-        alert = wait.until(expected_conditions.alert_is_present())
+        wait=WebDriverWait(driver, timeout=5)
+        alert=wait.until(expected_conditions.alert_is_present())
         alert.accept()
         sleep(5)
         driver.get("%s/admin-v?cid=%s" % (ROOT, CID))
@@ -307,27 +338,27 @@ class Test_動画をアップロードする():
             expected_conditions.presence_of_element_located((By.ID, 'elogiframe')))
 
         # iframeを取得
-        iframe = driver.find_element(By.CSS_SELECTOR, 'iframe#elogiframe')
+        iframe=driver.find_element(By.CSS_SELECTOR, 'iframe#elogiframe')
         # iframeの中の要素を操作するために切り替える
         driver.switch_to.frame(iframe)
-        items = driver.find_elements(By.CLASS_NAME, "enclog_base")
+        items=driver.find_elements(By.CLASS_NAME, "enclog_base")
         assert len(items) > 0
 
-        center = items[0].find_element(By.CLASS_NAME, "logCenter")
-        div = center.find_elements(By.CSS_SELECTOR, "div")
+        center=items[0].find_element(By.CLASS_NAME, "logCenter")
+        div=center.find_elements(By.CSS_SELECTOR, "div")
         assert div[1].text == "title"
 
-        right = items[0].find_element(By.CLASS_NAME, "logRight")
-        div = right.find_elements(By.CSS_SELECTOR, "div div")
+        right=items[0].find_element(By.CLASS_NAME, "logRight")
+        div=right.find_elements(By.CSS_SELECTOR, "div div")
         assert div[2].text == "sample_movie.mp4"
 
     def test_添付ファイル付きの動画から添付ファイルを削除する(self):
         self._動画をアップロードする(attachment=True)
-        alert = WebDriverWait(driver, timeout=2).until(
+        alert=WebDriverWait(driver, timeout=2).until(
             expected_conditions.alert_is_present())
         assert alert.text == "動画を投稿しました。"
         alert.accept()
-        alert = WebDriverWait(driver, timeout=2).until(
+        alert=WebDriverWait(driver, timeout=2).until(
             expected_conditions.alert_is_present())
         assert alert.text == "添付ファイルのアップロードに成功しました。"
         alert.accept()
@@ -337,9 +368,9 @@ class Test_動画をアップロードする():
         driver.get(f"{ROOT}/admin-v?cid={CID}")
         # wait
         sleep(2)
-        items = driver.find_elements(
+        items=driver.find_elements(
             By.CSS_SELECTOR, ".vframeListAdminBG .vframeListInfoAdmin a")
-        detail_page_url = items[0].get_attribute("href")
+        detail_page_url=items[0].get_attribute("href")
         driver.get(detail_page_url)
         sleep(3)
 
@@ -347,26 +378,26 @@ class Test_動画をアップロードする():
         driver.get(detail_page_url)
         # wait
         sleep(2)
-        highLeveltab = driver.find_element(By.ID, "highLeveltab")
+        highLeveltab=driver.find_element(By.ID, "highLeveltab")
         highLeveltab.click()
         sleep(1)
 
-        attachmentFile = driver.find_element(By.ID, "tmpFileLinks")
+        attachmentFile=driver.find_element(By.ID, "tmpFileLinks")
         assert attachmentFile.get_attribute("innerText") == "attachment.png"
 
-        remove_icon = driver.find_element(By.ID, "tmpLinkField0")
+        remove_icon=driver.find_element(By.ID, "tmpLinkField0")
         remove_icon.click()
 
-        submit_button = driver.find_element(By.ID, "btnSubmit")
+        submit_button=driver.find_element(By.ID, "btnSubmit")
         submit_button.click()
-        alert = WebDriverWait(driver, timeout=1).until(
+        alert=WebDriverWait(driver, timeout=1).until(
             expected_conditions.alert_is_present())
         assert alert.text == "更新しました。"
         alert.accept()
         driver.refresh()
         sleep(2)
 
-        remove_icon = driver.find_elements(By.ID, "tmpLinkField0")
+        remove_icon=driver.find_elements(By.ID, "tmpLinkField0")
         assert len(remove_icon) == 0
 
     @ pytest.mark.skip(reason="うまく書けないので手動で行う")
@@ -379,10 +410,10 @@ class Test_動画をアップロードする():
         # create_mode_radio = driver.find_element(By.ID, "chkcreate")
         # create_mode_radio.click()
 
-        inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
+        inputs=driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
         inputs[1].send_keys(self.createFilepath("240x80.png"))
 
-        inputs = driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
+        inputs=driver.find_elements(By.CSS_SELECTOR, "input[type='file']")
         inputs[2].send_keys(self.createFilepath("920x320.png"))
         inputs[3].send_keys(self.createFilepath("920x320.png"))
         inputs[4].send_keys(self.createFilepath("920x320.png"))
@@ -396,10 +427,10 @@ class Test_動画をアップロードする():
         # title = driver.find_element(By.ID, "title")
         # title.send_keys("the_title")
         sleep(3)
-        submit = driver.find_element(By.ID, "btnSubmit2")
+        submit=driver.find_element(By.ID, "btnSubmit2")
         submit.click()
 
-        alert = WebDriverWait(driver, timeout=1).until(
+        alert=WebDriverWait(driver, timeout=1).until(
             expected_conditions.alert_is_present())
         assert alert.text == "更新しました。"
 
@@ -408,13 +439,13 @@ class Test_動画をアップロードする():
         driver.get("%s/index" % (ROOT))
         # wait
         sleep(3)
-        thumbs = driver.find_elements(By.CSS_SELECTOR, ".t_medium_tile a")
-        play_page_url = thumbs[0].get_attribute("href")
+        thumbs=driver.find_elements(By.CSS_SELECTOR, ".t_medium_tile a")
+        play_page_url=thumbs[0].get_attribute("href")
         driver.get(play_page_url)
         sleep(3)
         assert driver.title == "SQEX-TV | Play"
-        video = driver.find_element(By.CSS_SELECTOR, "video")
-        video_url = video.get_attribute("src")
+        video=driver.find_element(By.CSS_SELECTOR, "video")
+        video_url=video.get_attribute("src")
         assert re.search(
             "/videoFiles/sqextv/[0-9a-f]*.mp4", video_url) != None
 
@@ -429,8 +460,8 @@ class Test_動画をアップロードする():
         driver.get("%s/admin-cmem?cid=%s" % (ROOT, CID))
         assert driver.title == "SQEX-TV | AdminPanel"
         sleep(5)
-        members = driver.find_element(By.ID, "memberPanel")
-        html = members.get_attribute("innerHTML")
+        members=driver.find_element(By.ID, "memberPanel")
+        html=members.get_attribute("innerHTML")
         assert "現在情報を取得中です、しばらくお待ちください・・・" in html == False
 
     def test_MY動画ページにコーポレートチャンネルの全動画一覧が表示される(self):
@@ -438,15 +469,15 @@ class Test_動画をアップロードする():
         driver.get("%s/admin-vm?cid=%s" % (ROOT, CID))
         assert driver.title == "SQEX-TV | AdminPanel"
         sleep(3)
-        items = driver.find_elements(By.CLASS_NAME, "vframeListAdminLongBG")
+        items=driver.find_elements(By.CLASS_NAME, "vframeListAdminLongBG")
         assert len(items) > 0
 
     def test_システム管理者設定(self):
         login()
         driver.get("%s/admin-sys?cid=%s" % (ROOT, CID))
-        contents = driver.find_element(By.ID, "contents_mini")
-        html = contents.get_attribute("innerHTML")
-        matches = re.search("(.\\s)*old menu(.\\s)*", html)
+        contents=driver.find_element(By.ID, "contents_mini")
+        html=contents.get_attribute("innerHTML")
+        matches=re.search("(.\\s)*old menu(.\\s)*", html)
         assert matches != None
 
     def test_helppage(self):

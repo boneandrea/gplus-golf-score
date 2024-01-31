@@ -15,32 +15,8 @@ class TotalScore
 {
     public function getIGolf($url)
     {
-        // Usage: getIGolf("https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a")
-        $url1 = preg_replace("/#\/landscape-a/", "/leaderboard", $url);
-
-        $client = new Client(['cookies' => true]);
-        $response = $client->request('GET', $url);
-        $response = $client->request('GET', $url1);
-
-        $html = $response->getBody()->getContents();
-        $dom = new Crawler($html);
-
-        $tr = $dom->filter(".ui-table-view tr");
-
-        $count_members = $tr->count() - 2;
-
-        $scores = [];
-
-        for($i = 0;$i < $count_members;$i++) {
-            $score = $tr->eq($i + 2);
-            $scores[] = [
-                "name" => $score->filter("td")->eq(1)->text(),
-                "score" => [],
-                "gross" => intval($score->filter("td")->eq(28)->text())
-            ];
-        }
-
-        return ["scores" => $scores];
+        $json = `python headless.py $url`;
+        return json_decode($json, true);
     }
 
     public function getMarshalI($url)
