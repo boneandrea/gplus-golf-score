@@ -42,17 +42,29 @@ class TotalScore{
     }
 
     public function getMarshalI(){
-        $url0="https://marshal-i.com/ops/score/oakvillage_20231219_5d0e4f2f";
+        $url="https://marshal-i.com/ops/score/oakvillage_20231219_5d0e4f2f";
+        $url="https://marshal-i.com/ops/score/kazusamona_20240123_4fcf31a0";
 
         $client = new Client(['cookies' => true]);
         $jar = new CookieJar;
-        $response = $client->request('GET', $url0);
+        $response = $client->request('GET', $url);
 
         // ページのコンテンツをDomCrawlerに渡す
         $html = $response->getBody()->getContents();
         $dom = new Crawler($html);
 
         $tr=$dom->filter("#table_start tr");
+
+        $d=$dom->filter(".panel-heading")->eq(0)->text();
+        if(preg_match("/(.*)プレー日：(.*)/", $d, $m)){
+            $course=trim($m[1]);
+            $date=date_parse_from_format("Y年m月d日",trim($m[2]));
+            $date=sprintf("%s/%s/%s",
+                    $date["year"],
+                    $date["month"],
+                    $date["day"],
+            );
+        }
 
         $count_members=($tr->count()-4)/2;
         $_pars=$tr->eq(2)->filter("td");
@@ -65,7 +77,6 @@ class TotalScore{
         unset($pars[9]);
         $pars=array_values($pars);
 
-        //var_dump(json_encode($pars));
         $ss=[];
         for($i=0;$i<$count_members;$i++){
             $name=$tr->eq($i*2+3)->filter("td")->eq(0)->text();
@@ -83,7 +94,11 @@ class TotalScore{
             ];
         }
 
-        $results=[];
+        $results=[
+            "course"=>$course,
+            "date"=>$date,
+            "scores"=>[]
+        ];
         for($member_index=0;$member_index<$count_members;$member_index++){
             $r=[];
             $s=[];
@@ -102,7 +117,7 @@ class TotalScore{
                 "scores"=>$s,
                 "gross"=>$gross
             ];
-            $results[]=$r;
+            $results["scores"][]=$r;
 
         }
         return $results;
