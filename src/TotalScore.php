@@ -35,10 +35,12 @@ class TotalScore
             $score = $tr->eq($i + 2);
             $scores[] = [
                 "name" => $score->filter("td")->eq(1)->text(),
+                "score" => [],
                 "gross" => intval($score->filter("td")->eq(28)->text())
             ];
         }
-        return $scores;
+
+        return ["scores" => $scores];
     }
 
     public function getMarshalI($url)
