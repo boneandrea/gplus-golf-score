@@ -2,7 +2,7 @@
     "name": "banchou/gp_score",
     "autoload": {
         "psr-4": {
-            "Banchou\\GpScore\\": "src/"
+            "Golf\\": "src/"
         }
     },
     "authors": [
