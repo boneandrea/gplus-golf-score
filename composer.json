@@ -13,6 +13,7 @@
     ],
     "require": {
         "symfony/dom-crawler": "^7.0",
-        "guzzlehttp/guzzle": "^7.8"
+        "guzzlehttp/guzzle": "^7.8",
+        "symfony/css-selector": "^7.0"
     }
 }
