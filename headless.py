@@ -61,12 +61,10 @@ args = parser.parse_args()
 
 if args.igolf:
     x = igolf()
-    scores = x.get_scores(args.url)
-    print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 
 if args.marshali:
     x = marshalI()
-    scores = x.get_scores(args.url)
-    print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 
+scores = x.get_scores(args.url)
+print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 store_score(scores)

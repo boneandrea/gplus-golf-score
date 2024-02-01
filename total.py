@@ -1,17 +1,25 @@
 from database import *
 import sys
+from datetime import datetime
 
 
 class total:
     db = None
 
-    def collect_score(self):
+    def collect_score(self, query):
         client = database().connect_db()
         self.db = client["score"]
-        return self.db.score.find({})
+        return self.db.score.find(query)
 
     def sort_by_gross(self):
-        games = self.collect_score()
+        query = {
+            "date":
+            {
+                "$gte": datetime(2024, 1, 1),
+                "$lt": datetime(2025, 1, 1)
+            }
+        }
+        games = self.collect_score(query)
         average_gross = {}
         for game in games:
             for scores in game["scores"]:
