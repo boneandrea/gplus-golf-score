@@ -77,8 +77,6 @@ class marshalI:
         }
         num_player = len(tr)-1
 
-        print(results)
-
         for i in range(0, num_player):
             name = tr[i].find_elements(By.TAG_NAME, "td")[
                 1].get_attribute("innerText").replace('\u3000', '')

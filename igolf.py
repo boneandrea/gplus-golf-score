@@ -69,12 +69,13 @@ class igolf:
         num_player = len(tr)-2
 
         basic_info = self.get_basic_info()
+        par = self.get_par()
         scores = {
             "course": basic_info["course"],
             "date": basic_info["date"],
+            "par": sum(par),
             "scores": []
         }
-        par = self.get_par()
 
         for i in range(0, num_player):
             tds = tr[i+2].find_elements(By.TAG_NAME, "td")
@@ -134,5 +135,5 @@ class igolf:
         date = dateutil.parser.parse(date)
         return {
             "course": course,
-            "date": date
+            "date": date,
         }

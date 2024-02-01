@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
 from datetime import date, datetime
+import argparse
 from time import sleep
 import pytest
 import json
@@ -46,12 +47,26 @@ def store_score(result):
         print(i)
 
 
-# x = igolf()
-# scores = x.get_scores(sys.argv[1])
-# print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
+parser = argparse.ArgumentParser(
+    prog='ProgramName',
+    description='What the program does',
+    epilog='Text at the bottom of help')
 
-x = marshalI()
-scores = x.get_scores(sys.argv[1])
-print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
+
+# option that takes a value
+parser.add_argument('-i', '--igolf', action="store_true")
+parser.add_argument('-m', '--marshali', action="store_true")
+parser.add_argument('url')
+args = parser.parse_args()
+
+if args.igolf:
+    x = igolf()
+    scores = x.get_scores(args.url)
+    print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
+
+if args.marshali:
+    x = marshalI()
+    scores = x.get_scores(args.url)
+    print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 
 store_score(scores)
