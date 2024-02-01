@@ -39,7 +39,7 @@ def store_score(result):
 
     import dateutil.parser
     dateStr = "2016-11-11"
-    d = dateutil.parser.parse(dateStr)
+    d = dateutil.parser.parse(dateStr)  # to ISODate
     score.insert_one(result)
 
     item = score.find({})
