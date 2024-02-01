@@ -8,9 +8,7 @@ class total:
     def collect_score(self):
         client = database().connect_db()
         self.db = client["score"]
-        score = self.db.score
-
-        return score.find({})
+        return self.db.score.find({})
 
     def sort_by_gross(self):
         games = self.collect_score()
@@ -45,15 +43,26 @@ class total:
             self.db.score.update_one(
                 {"_id": game["_id"]}, {"$set": {"scores": game["scores"]}})
 
+    def count_prizes(self):
+        games = self.collect_score()
+        self.count_prize(games, "HOLEINONE")
+        self.count_prize(games, "ALBATROSS")
+        self.count_prize(games, "EAGLE")
+        self.count_prize(games, "BIRDIE")
+
+    def count_prize(self, games, prize):
+        games.rewind()
+        print("================lookup ", prize)
+        for game in games:
+            for scores in game["scores"]:
+                prizes = filter(lambda x: x["prize"] == prize,
+                                scores["score"])
+                for p in prizes:
+                    print(scores["name"], p)
+
 
 if __name__ == "__main__":
 
     x = total()
     x.set_best_gross()
-    sys.exit(0)
-    members = x.sort_by_gross()
-
-    for member in members:
-        print(member)
-
-    pass
+    x.count_prizes()
