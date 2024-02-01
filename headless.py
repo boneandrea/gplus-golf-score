@@ -30,11 +30,6 @@ def json_serial(obj):
     raise TypeError(f'Type {obj} not serializable')
 
 
-x = igolf()
-scores = x.get_igolf(sys.argv[1])
-print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
-
-
 def store_score(result):
     client = database().connect_db()
     db = client["score"]
@@ -49,5 +44,9 @@ def store_score(result):
     for i in item:
         print(i)
 
+
+x = igolf()
+scores = x.get_igolf(sys.argv[1])
+print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 
 store_score(scores)
