@@ -8,7 +8,7 @@ def prize(par, score):
         case -2:
             return "EAGLE"
         case -1:
-            return "BOGEY"
+            return "BIRDIE"
         case 0:
             return "PAR"
         case 1:
