@@ -60,85 +60,52 @@ class marshalI:
         wait = WebDriverWait(driver, timeout=5)
         table = driver.find_element(
             By.CSS_SELECTOR, "table.holebyholeTable")
-        print(table)
         tr = table.find_elements(By.CSS_SELECTOR, "tbody tr")
-        print(len(tr))
 
         d = driver.find_element(
             By.CSS_SELECTOR, ".panel-heading").get_attribute("innerText")
-
         m = re.match(r'((.|\s)*)プレー日：((.|\s)*)', d)
         course = m[1].strip()
         date = m[3].strip()
-        print(course, date)
-        return
-        num_player = len(tr)-2
-
-        basic_info = self.get_basic_info()
-        scores = {
-            "course": basic_info["course"],
-            "date": basic_info["date"],
-            "scores": []
-        }
         par = self.get_par()
 
-        for i in range(0, num_player):
-            tds = tr[i+2].find_elements(By.TAG_NAME, "td")
-            score = []
-            for td in tds:
-                score.append(td.get_attribute(
-                    "innerText").replace('\u3000', ''))
-            score.pop(0)
-            del score[1:6]
-            score.pop(10)
-            score.pop(10)
-            score.pop(19)
-
-            data = {
-                "name": "",
-                "score": []
-            }
-            name = ""
-
-            for i, s in enumerate(score):
-                if i == 0:
-                    data["name"] = score[i]
-                if i > 0 and i < 19:
-                    data["score"].append({
-                        "hole": i,
-                        "score": int(score[i]),
-                        "prize": prize(par[i-1], int(score[i]))
-                    })
-                if i == 19:
-                    data["gross"] = int(score[i])
-
-            scores["scores"].append(data)
-        driver.quit()
-        return scores
-
-    def get_basic_info(self):
-        self.init_browser()
-        driver.get(
-            "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a")
-
-        wait = WebDriverWait(driver, timeout=5)
-        course = driver.find_elements(By.CSS_SELECTOR, ".cc-name")[
-            0].get_attribute("innerText")
-        import re
-        course = re.sub("^【", "", course)
-        course = re.sub("】$", "", course)
-
-        date = driver.find_elements(By.CSS_SELECTOR, ".date")[
-            0].get_attribute("innerText")
-
-        # from dateutil.parser import parse
-        from datetime import datetime
-        date = datetime.strptime(date.replace(
-            "プレー日: ", ""), "%Y年%m月%d日").strftime("%Y/%m/%d")
-
-        import dateutil.parser
-        date = dateutil.parser.parse(date)
-        return {
+        results = {
             "course": course,
-            "date": date
+            "date": date,
+            "par": sum(par),
+            "scores": []
         }
+        num_player = len(tr)-1
+
+        print(results)
+
+        for i in range(0, num_player):
+            name = tr[i].find_elements(By.TAG_NAME, "td")[
+                1].get_attribute("innerText").replace('\u3000', '')
+            td = tr[i].find_elements(By.TAG_NAME, "td")
+            score = []
+            for j in range(0, 20):
+                score.append(
+                    td[3+j].find_element(By.TAG_NAME, "span").get_attribute("data-par"))
+
+            score.pop(9)
+            score.pop(18)
+
+            scores = {
+                "name": name,
+                "score": [],
+                "gross": 0
+            }
+
+            gross = 0
+            for i, s in enumerate(score):
+                scores["score"].append({
+                    "hole": i+1,
+                    "score": int(score[i])+int(par[i-1]),
+                    "prize": prize(par[i-1], int(score[i])+int(par[i-1]))
+                })
+                scores["gross"] += int(score[i])+int(par[i-1])
+
+            results["scores"].append(scores)
+        driver.quit()
+        return results
