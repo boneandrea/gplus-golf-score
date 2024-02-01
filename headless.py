@@ -5,6 +5,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
+from datetime import date, datetime
 from time import sleep
 import pytest
 import json
@@ -55,7 +56,7 @@ def get_par():
     return par
 
 
-def get_scores(url):
+def get_igolf(url):
     init_browser()
     driver.get(url)
     driver.get(url.replace("#/landscape-a", "/leaderboard"))
@@ -133,6 +134,13 @@ def prize(par, score):
             return ""
 
 
+def json_serial(obj):
+
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError(f'Type {obj} not serializable')
+
+
 def get_basic_info():
 
     init_browser()
@@ -153,23 +161,34 @@ def get_basic_info():
     from datetime import datetime
     date = datetime.strptime(date.replace(
         "プレー日: ", ""), "%Y年%m月%d日").strftime("%Y/%m/%d")
+
+    import dateutil.parser
+    date = dateutil.parser.parse(date)
+
     return {
         "course": course,
         "date": date
     }
 
 
-scores = get_scores(sys.argv[1])
-print(json.dumps(scores, indent=2, ensure_ascii=False))
+scores = get_igolf(sys.argv[1])
+print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 driver.quit()
 
-x = database()
-client = x.connect_db()
-db = client["score"]
-score = db["score"]
 
-score.insert_one({"fe": 17, "zuba": [3, 3, 4]})
+def store_score(result):
+    client = database().connect_db()
+    db = client["score"]
+    score = db["score"]
 
-item = score.find({})
-for i in item:
-    print(i)
+    import dateutil.parser
+    dateStr = "2016-11-11"
+    d = dateutil.parser.parse(dateStr)
+    score.insert_one(result)
+
+    item = score.find({})
+    for i in item:
+        print(i)
+
+
+store_score(scores)
