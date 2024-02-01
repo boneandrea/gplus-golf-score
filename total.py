@@ -1,11 +1,14 @@
 from database import *
+import sys
 
 
 class total:
+    db = None
+
     def collect_score(self):
         client = database().connect_db()
-        db = client["score"]
-        score = db["score"]
+        self.db = client["score"]
+        score = self.db.score
 
         return score.find({})
 
@@ -34,10 +37,20 @@ class total:
 
         return sorted(to_sort, key=lambda x: x["average"])
 
+    def set_best_gross(self):
+        games = self.collect_score()
+        for game in games:
+            r = sorted(game["scores"], key=lambda x: x["gross"])[0]
+            game["scores"][0]["best_gross"] = True
+            self.db.score.update_one(
+                {"_id": game["_id"]}, {"$set": {"scores": game["scores"]}})
+
 
 if __name__ == "__main__":
 
     x = total()
+    x.set_best_gross()
+    sys.exit(0)
     members = x.sort_by_gross()
 
     for member in members:
