@@ -11,6 +11,7 @@ import json
 import os
 import sys
 import re
+from database import *
 """
 Run:
 
@@ -161,3 +162,14 @@ def get_basic_info():
 scores = get_scores(sys.argv[1])
 print(json.dumps(scores, indent=2, ensure_ascii=False))
 driver.quit()
+
+x = database()
+client = x.connect_db()
+db = client["score"]
+score = db["score"]
+
+score.insert_one({"fe": 17, "zuba": [3, 3, 4]})
+
+item = score.find({})
+for i in item:
+    print(i)
