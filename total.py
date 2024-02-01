@@ -6,7 +6,7 @@ from datetime import datetime
 class total:
     db = None
 
-    def collect_score(self, query):
+    def collect_score(self, query=None):
         client = database().connect_db()
         self.db = client["score"]
         return self.db.score.find(query)
