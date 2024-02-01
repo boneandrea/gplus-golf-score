@@ -14,6 +14,7 @@ import sys
 import re
 from database import *
 from igolf import *
+from marshalI import *
 """
 Run:
 
@@ -45,8 +46,12 @@ def store_score(result):
         print(i)
 
 
-x = igolf()
-scores = x.get_igolf(sys.argv[1])
+# x = igolf()
+# scores = x.get_scores(sys.argv[1])
+# print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
+
+x = marshalI()
+scores = x.get_scores(sys.argv[1])
 print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 
 store_score(scores)

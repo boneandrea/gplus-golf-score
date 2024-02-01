@@ -24,7 +24,7 @@ $ pytest test.py # silent
 """
 
 
-class igolf:
+class marshalI:
     driver = None
 
     def init_browser(self):
@@ -57,15 +57,21 @@ class igolf:
     def get_scores(self, url):
         self.init_browser()
         driver.get(url)
-        driver.get(url.replace("#/landscape-a", "/leaderboard"))
         wait = WebDriverWait(driver, timeout=5)
-        show_score_button = driver.find_elements(
-            By.CSS_SELECTOR, ".show-score")
-        show_score_button[0].click()
-        wait = WebDriverWait(driver, timeout=5)
-        table = driver.find_elements(By.CSS_SELECTOR, ".ui-table-view")[0]
+        table = driver.find_element(
+            By.CSS_SELECTOR, "table.holebyholeTable")
+        print(table)
+        tr = table.find_elements(By.CSS_SELECTOR, "tbody tr")
+        print(len(tr))
 
-        tr = table.find_elements(By.TAG_NAME, "tr")
+        d = driver.find_element(
+            By.CSS_SELECTOR, ".panel-heading").get_attribute("innerText")
+
+        m = re.match(r'((.|\s)*)プレー日：((.|\s)*)', d)
+        course = m[1].strip()
+        date = m[3].strip()
+        print(course, date)
+        return
         num_player = len(tr)-2
 
         basic_info = self.get_basic_info()
