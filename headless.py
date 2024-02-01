@@ -37,14 +37,11 @@ def store_score(result):
     db = client["score"]
     score = db["score"]
 
-    import dateutil.parser
-    dateStr = "2016-11-11"
-    d = dateutil.parser.parse(dateStr)  # to ISODate
-    score.insert_one(result)
+    # import dateutil.parser
+    # dateStr = "2016-11-11"
+    # d = dateutil.parser.parse(dateStr)  # from string to ISODate
 
-    item = score.find({})
-    for i in item:
-        print(i)
+    score.insert_one(result)
 
 
 parser = argparse.ArgumentParser(
@@ -59,6 +56,7 @@ parser.add_argument('-m', '--marshali', action="store_true")
 parser.add_argument('url')
 args = parser.parse_args()
 
+x = None
 if args.igolf:
     x = igolf()
 
