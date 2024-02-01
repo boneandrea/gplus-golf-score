@@ -45,3 +45,7 @@ https://www.hopes.host/blog/php-mongodb
 
 # Railsway.appの設定
 `MongoDB -> Settings _> Source -> Source Image -> mongo` をbuild
+
+## 困った
+Railway上のWeb mongodb UIからデータを直すと、dateがstringになる
+-> tool作る(lose)
