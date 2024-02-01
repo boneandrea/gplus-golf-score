@@ -34,9 +34,15 @@ class total:
             to_sort.append(average_gross[name])
 
         sorted_score = sorted(to_sort, key=lambda x: x["average"])
-        for player in sorted_score:
-            print(player["name"], player["average"])
-        return sorted_score
+        result = []
+        for index, player in enumerate(sorted_score):
+            result.append({
+                "rank": index+1,
+                "name": player["name"],
+                "game_count": player["game_count"],
+                "gross": player["average"]
+            })
+        return result
 
     def set_best_gross(self):
         games = self.collect_score()
@@ -63,6 +69,10 @@ class total:
                 count_prize = len(list(prizes))
                 if count_prize > 0:
                     print(scores["name"], prize, count_prize)
+
+    def create_html_data(self):
+        return self.sort_by_gross()
+        pass
 
 
 if __name__ == "__main__":
