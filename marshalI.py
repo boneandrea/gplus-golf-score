@@ -68,6 +68,10 @@ class marshalI:
         course = m[1].strip()
         date = m[3].strip()
         par = self.get_par()
+        from datetime import datetime
+        import dateutil.parser
+        date = datetime.strptime(date, "%Y年%m月%d日").strftime("%Y/%m/%d")
+        date = dateutil.parser.parse(date)
 
         results = {
             "course": course,
