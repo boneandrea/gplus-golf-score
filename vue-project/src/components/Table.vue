@@ -75,8 +75,8 @@
 
  function send(){
      console.log(members.value)
-     if(confirm("送信してよいですか？"))
-         console.log(members.value[3].name)
+     if(!confirm("送信してよいですか？"))return
+
      console.log(JSON.stringify(members.value))
      alert("sent")
  }
@@ -130,7 +130,9 @@
                     @dragenter="dragEnter(index)"
                 >
                     <td>{{index+1}}</td>
-                    <td>{{member.name}}</td>
+                    <td>
+                        <input class="form-control responsive" type="text" v-model="member.name">
+                    </td>
                     <td>
                         <input type="checkbox"
                                @change="change(e,index,0)"
