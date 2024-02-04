@@ -1,11 +1,19 @@
 <script setup>
  import { ref } from 'vue'
+ const q=(s,root)=> root ? root.querySelector(s): document.querySelector(s)
  const msg="本日のスコア"
  const members=ref([])
+ const spinner=ref(false)
  const fetchData=()=>{
-     const url="http://localhost:5000/"
-     fetch(url).then((response) => {
-         console.log(response.status)
+     const url="http://localhost:5000/get"
+     spinner.value=true
+     fetch(url,{
+         method: "POST",
+         headers: {"content-type": "application/json"},
+         body: JSON.stringify({
+             url: q("#url").value
+         })
+     }).then((response) => {
          return response.json()
      }).then((data) => {
          console.log(data)
@@ -15,19 +23,12 @@
          data["scores"].forEach(e=>{
              members.value.push(e)
          })
+         spinner.value=false
      }).catch(e=>{
          console.error(e)
          alert(e)
      })
  }
- fetchData()
- // init
- members.value.forEach((e,i)=>{
-     members.value[i].point=90-i
-     members.value[i].hdcp=36-i*0.5
-     members.value[i].gross=i+80
-     members.value[i].net=members.value[i].gross-members.value[i].hdcp
- })
 
  function dragList(e,i){
      console.log(e,i)
@@ -74,11 +75,22 @@
     <div>
         <h1 class="green">
             スコア編集:{{today.getFullYear()}}/{{today.getMonth()+1}}/{{today.getDate()}}
-            <button class="btn btn-primary btn-lg" @click="send">送信</button>
         </h1>
-        <h2>
-            入力するもの：
-        </h2>
+        <div class="form-group row">
+            <div class="col">
+                <input class="form-control"
+                   type="url" id="url"
+                   placeholder="本日のスコアのURL"
+                />
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" @click="fetchData">データ取得</button>
+            </div>
+            <div class="col">
+                <div v-show="spinner" class="spinner-border text-secondary" role="status" id="status"/>
+            </div>
+        </div>
+        <p>入力するもの：</p>
         <ul>
             <li>HDCP</li>
             <li>ニアピン</li>
@@ -136,6 +148,7 @@
                 </tr>
             </tbody>
         </table>
+        <button class="btn btn-primary" @click="send">送信</button>
     </div>
 </template>
 
