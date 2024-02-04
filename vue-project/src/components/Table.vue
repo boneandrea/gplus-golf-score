@@ -46,6 +46,14 @@
      if(nearPinIndex===3) members.value[i].near3=true
  }
 
+ const sort=()=>{
+     members.value.sort((a,b)=>{
+         if(a.net>b.net) return 1
+         if(a.net<b.net) return -1
+         return 0
+     })
+ }
+
  const dragIndex = ref(null);
 
  const dragStart = (index) => {
@@ -54,7 +62,6 @@
  }
 
  const hdcp=(i)=>{
-     console.log(members.value[i].hdcp)
      members.value[i].net=
          members.value[i].gross-members.value[i].hdcp
  }
@@ -84,7 +91,8 @@
             <div class="col">
                 <input class="form-control"
                    type="url" id="url"
-                   placeholder="本日のスコアのURL"
+                       placeholder="本日のスコアのURL"
+                       autofocus
                 />
             </div>
             <div class="col">
@@ -94,11 +102,13 @@
                 <div v-show="spinner" class="spinner-border text-secondary" role="status" id="status"/>
             </div>
         </div>
-        <p>入力するもの：</p>
-        <ul>
-            <li>HDCP</li>
-            <li>ニアピン</li>
-        </ul>
+        <p>やること：</p>
+        <ol>
+            <li>名前修正</li>
+            <li>ニアピン設定</li>
+            <li>HDCP入力</li>
+            <li>ソート</li>
+        </ol>
         <hr>
         <table class="table table-striped table-bordered">
             <thead>
@@ -152,7 +162,14 @@
                 </tr>
             </tbody>
         </table>
-        <button class="btn btn-primary" @click="send">送信</button>
+        <div class="form-group row">
+            <div class="col">
+                <button class="btn btn-success" @click="sort">ソート</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" @click="send">送信</button>
+            </div>
+        </div>
     </div>
 </template>
 
