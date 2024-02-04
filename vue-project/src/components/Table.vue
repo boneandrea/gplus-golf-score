@@ -5,9 +5,13 @@
  const members=ref([])
  const spinner=ref(false)
  const fetchData=()=>{
-     const url="http://localhost:5000/get"
+     if(!q("#url").value){
+         alert("SET URL")
+         return
+     }
+     const apiUrl="http://localhost:5000/get"
      spinner.value=true
-     fetch(url,{
+     fetch(apiUrl,{
          method: "POST",
          headers: {"content-type": "application/json"},
          body: JSON.stringify({
