@@ -19,5 +19,5 @@ result = template.render(
     title='ランキング:水曜ゴルフGP 2024',
     data=x.create_html_data()
 )
-with open('index.html', 'w') as f:
+with open('docs/index.html', 'w') as f:
     f.write(result)
