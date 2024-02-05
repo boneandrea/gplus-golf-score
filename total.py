@@ -9,20 +9,27 @@ class total:
     def collect_score(self, query=None):
         client = database().connect_db()
         self.db = client["score"]
+        print(self.db.score.count_documents(query))
         return self.db.score.find(query)
 
     def sort_by_gross(self):
         query = {
             "date":
             {
-                "$gte": datetime(2024, 1, 1),
+                "$gte": datetime(2023, 1, 1),
                 "$lt": datetime(2025, 1, 1)
             }
         }
         games = self.collect_score(query)
         average_gross = {}
+        point_ranking = {}
         for game in games:
             for scores in game["scores"]:
+                if "point" in scores:
+                    point = scores["point"]
+                else:
+                    point = 0
+
                 name = scores["name"]
                 gross = int(scores["gross"])
                 if name in average_gross:
@@ -34,22 +41,28 @@ class total:
                         "gross": gross,
                         "game_count": 1
                     }
+                if name in point_ranking:
+                    point_ranking[name] += point
+                else:
+                    point_ranking[name] = point
 
         to_sort = []
+        print(point_ranking)
         for name in average_gross:
             average_gross[name]["average"] = round(average_gross[name]["gross"] /
                                                    average_gross[name]["game_count"], 2)
-
+            average_gross[name]["point"] = point_ranking[name]
             to_sort.append(average_gross[name])
 
-        sorted_score = sorted(to_sort, key=lambda x: x["average"])
+        sorted_score = sorted(to_sort, key=lambda x: x["point"], reverse=True)
         result = []
         for index, player in enumerate(sorted_score):
             result.append({
                 "rank": index+1,
                 "name": player["name"],
                 "game_count": player["game_count"],
-                "gross": player["average"]
+                "gross": player["average"],
+                "point": player["point"]
             })
         return result
 
@@ -81,7 +94,6 @@ class total:
 
     def create_html_data(self):
         return self.sort_by_gross()
-        pass
 
 
 if __name__ == "__main__":
