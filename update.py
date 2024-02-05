@@ -13,7 +13,7 @@ env = Environment(
 #    レンダリング結果はファイルに出力する。
 template = env.get_template('index.html')
 x = total()
-print(x.create_html_data())
+# print(x.create_html_data())
 
 result = template.render(
     title='ランキング:水曜ゴルフGP 2024',

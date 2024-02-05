@@ -9,7 +9,6 @@ class total:
     def collect_score(self, query=None):
         client = database().connect_db()
         self.db = client["score"]
-        print(self.db.score.count_documents(query))
         return self.db.score.find(query)
 
     def sort_by_gross(self):
@@ -47,7 +46,6 @@ class total:
                     point_ranking[name] = point
 
         to_sort = []
-        print(point_ranking)
         for name in average_gross:
             average_gross[name]["average"] = round(average_gross[name]["gross"] /
                                                    average_gross[name]["game_count"], 2)
