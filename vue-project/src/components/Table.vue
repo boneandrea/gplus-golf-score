@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-const q = (s, root) => root ? root.querySelector(s) : document.querySelector(s)
+const q = (s, root) => (root ? root.querySelector(s) : document.querySelector(s))
 const msg = '本日のスコア'
 const members = ref([])
 const spinner = ref(false)
@@ -29,6 +29,7 @@ const fetchData = () => {
       data['scores'].forEach((e) => {
         members.value.push(e)
       })
+        setNet()
       spinner.value = false
     })
     .catch((e) => {
@@ -37,7 +38,12 @@ const fetchData = () => {
     })
 }
 
-function dragList(e, i) {
+ const setNet=()=>{
+     members.value.forEach((e,i)=>{
+         members.value[i]["net"]=members.value[i]["gross"]
+     })
+ }
+ function dragList(e, i) {
   console.log(e, i)
   console.log(members.value)
 }
@@ -86,31 +92,16 @@ const today = new Date()
 </script>
 <template>
   <div>
-    <h1 class="green">
-      スコア編集:{{ today.getFullYear() }}/{{ today.getMonth() + 1 }}/{{
-        today.getDate()
-      }}
-    </h1>
+    <h1 class="green">スコア編集:{{ today.getFullYear() }}/{{ today.getMonth() + 1 }}/{{ today.getDate() }}</h1>
     <div class="form-group row">
       <div class="col">
-        <input
-          class="form-control"
-          type="url"
-          id="url"
-          placeholder="本日のスコアのURL"
-          autofocus
-        />
+        <input class="form-control" type="url" id="url" placeholder="本日のスコアのURL" autofocus />
       </div>
       <div class="col">
         <button class="btn btn-primary" @click="fetchData">データ取得</button>
       </div>
       <div class="col">
-        <div
-          v-show="spinner"
-          class="spinner-border text-secondary"
-          role="status"
-          id="status"
-        />
+        <div v-show="spinner" class="spinner-border text-secondary" role="status" id="status" />
       </div>
     </div>
     <p>やること：</p>
@@ -143,48 +134,24 @@ const today = new Date()
         >
           <td>{{ index + 1 }}</td>
           <td>
-            <input
-              class="form-control responsive"
-              type="text"
-              v-model="member.name"
-            />
+            <input class="form-control responsive" type="text" style="min-width: 10em" v-model="member.name" />
           </td>
           <td>
-            <input
-              type="checkbox"
-              @change="change(e, index, 0)"
-              :checked="members[index].near0"
-            />
-            <input
-              type="checkbox"
-              @change="change(e, index, 1)"
-              :checked="members[index].near1"
-            />
+            <input type="checkbox" @change="change(e, index, 0)" v-model="members[index].near0" />
+            <input type="checkbox" @change="change(e, index, 1)" v-model="members[index].near1" />
           </td>
           <td class="col-xs-6">
-            <input
-              type="checkbox"
-              @change="change(e, index, 2)"
-              :checked="members[index].near2"
-            />
-            <input
-              type="checkbox"
-              @change="change(e, index, 3)"
-              :checked="members[index].near3"
-            />
+            <input type="checkbox" @change="change(e, index, 2)" :checked="members[index].near2" />
+            <input type="checkbox" @change="change(e, index, 3)" :checked="members[index].near3" />
           </td>
           <td>{{ member.gross }}</td>
           <td class="col-lg-2">
-            <input
-              class="form-control col-xs-6"
-              type="number"
-              v-model="member.hdcp"
-              step="0.1"
-              @input="hdcp(index)"
-            />
+            <input class="form-control" style="min-width: 4em" type="number" v-model="member.hdcp" step="0.1" @input="hdcp(index)" />
           </td>
           <td>{{ member.net }}</td>
-          <td>{{ member.point }}</td>
+          <td>
+              <input style="min-width: 4em" class="form-control col-xs-6" type="number" v-model="member.point" step="1"/>
+          </td>
         </tr>
       </tbody>
     </table>
