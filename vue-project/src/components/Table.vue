@@ -29,7 +29,7 @@ const fetchData = () => {
       data['scores'].forEach((e) => {
         members.value.push(e)
       })
-        setNet()
+      setNet()
       spinner.value = false
     })
     .catch((e) => {
@@ -38,12 +38,12 @@ const fetchData = () => {
     })
 }
 
- const setNet=()=>{
-     members.value.forEach((e,i)=>{
-         members.value[i]["net"]=members.value[i]["gross"]
-     })
- }
- function dragList(e, i) {
+const setNet = () => {
+  members.value.forEach((e, i) => {
+    members.value[i]['net'] = members.value[i]['gross']
+  })
+}
+function dragList(e, i) {
   console.log(e, i)
   console.log(members.value)
 }
@@ -84,9 +84,27 @@ const dragEnter = (index) => {
 function send() {
   console.log(members.value)
   if (!confirm('送信してよいですか？')) return
-
-  console.log(JSON.stringify(members.value))
-  alert('sent')
+  const apiUrl = 'http://localhost:5000/store'
+  spinner.value = true
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(members.value),
+  })
+    .then((response) => {
+      return response.json()
+    })
+    .then((data) => {
+      console.log(data)
+      if (data.status === 'error') {
+        throw new Error(data['reason'])
+      }
+      spinner.value = false
+    })
+    .catch((e) => {
+      console.error(e)
+      alert(e)
+    })
 }
 const today = new Date()
 </script>
@@ -98,10 +116,10 @@ const today = new Date()
         <input class="form-control" type="url" id="url" placeholder="本日のスコアのURL" autofocus />
       </div>
       <div class="col">
-        <button class="btn btn-primary" @click="fetchData">データ取得</button>
+        <button class="btn btn-primary" @click="fetchData" :disabled="spinner">データ取得</button>
       </div>
       <div class="col">
-        <div v-show="spinner" class="spinner-border text-secondary" role="status" id="status" />
+        <div v-show="spinner" class="spinner-border text-secondary" role="status" />
       </div>
     </div>
     <p>やること：</p>
@@ -146,11 +164,18 @@ const today = new Date()
           </td>
           <td>{{ member.gross }}</td>
           <td class="col-lg-2">
-            <input class="form-control" style="min-width: 4em" type="number" v-model="member.hdcp" step="0.1" @input="hdcp(index)" />
+            <input
+              class="form-control"
+              style="min-width: 4em"
+              type="number"
+              v-model="member.hdcp"
+              step="0.1"
+              @input="hdcp(index)"
+            />
           </td>
           <td>{{ member.net }}</td>
           <td>
-              <input style="min-width: 4em" class="form-control col-xs-6" type="number" v-model="member.point" step="1"/>
+            <input style="min-width: 4em" class="form-control col-xs-6" type="number" v-model="member.point" step="1" />
           </td>
         </tr>
       </tbody>
@@ -160,7 +185,10 @@ const today = new Date()
         <button class="btn btn-success" @click="sort">ソート</button>
       </div>
       <div class="col">
-        <button class="btn btn-primary" @click="send">送信</button>
+        <button class="btn btn-primary" @click="send" :disabled="spinner">送信</button>
+      </div>
+      <div class="col">
+        <div v-show="spinner" class="spinner-border text-secondary" role="status" />
       </div>
     </div>
   </div>
