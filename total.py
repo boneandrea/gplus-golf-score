@@ -37,8 +37,9 @@ class total:
 
         to_sort = []
         for name in average_gross:
-            average_gross[name]["average"] = average_gross[name]["gross"] / \
-                average_gross[name]["game_count"]
+            average_gross[name]["average"] = round(average_gross[name]["gross"] /
+                                                   average_gross[name]["game_count"], 2)
+
             to_sort.append(average_gross[name])
 
         sorted_score = sorted(to_sort, key=lambda x: x["average"])
