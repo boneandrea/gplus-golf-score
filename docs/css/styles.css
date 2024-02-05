@@ -11050,3 +11050,7 @@ header.masthead {
     background-repeat: no-repeat;
     background-position: center;
 }
+
+tbody tr{
+    white-space: nowrap;
+}
