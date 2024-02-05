@@ -2,15 +2,17 @@
 import { ref } from 'vue'
 const q = (s, root) => (root ? root.querySelector(s) : document.querySelector(s))
 const msg = '本日のスコア'
+const game = ref({})
 const members = ref([])
-const spinner = ref(false)
+const spinner0 = ref(false)
+const spinner1 = ref(false)
 const fetchData = () => {
   if (!q('#url').value) {
     alert('SET URL')
     return
   }
   const apiUrl = 'http://localhost:5000/get'
-  spinner.value = true
+  spinner0.value = true
   fetch(apiUrl, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -23,6 +25,8 @@ const fetchData = () => {
     })
     .then((data) => {
       console.log(data)
+      game.value.course = data.course
+      game.value.date = new Date(data.date)
       if (data.status === 'error') {
         throw new Error(data['reason'])
       }
@@ -30,11 +34,14 @@ const fetchData = () => {
         members.value.push(e)
       })
       setNet()
-      spinner.value = false
+      spinner0.value = false
     })
     .catch((e) => {
       console.error(e)
       alert(e)
+    })
+    .finally(() => {
+      spinner0.value = false
     })
 }
 
@@ -85,11 +92,16 @@ function send() {
   console.log(members.value)
   if (!confirm('送信してよいですか？')) return
   const apiUrl = 'http://localhost:5000/store'
-  spinner.value = true
+  spinner1.value = true
   fetch(apiUrl, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(members.value),
+    body: JSON.stringify({
+      course: game.value.course,
+      date: game.value.date,
+      par: game.value.par,
+      scores: members.value,
+    }),
   })
     .then((response) => {
       return response.json()
@@ -99,27 +111,29 @@ function send() {
       if (data.status === 'error') {
         throw new Error(data['reason'])
       }
-      spinner.value = false
     })
     .catch((e) => {
       console.error(e)
       alert(e)
+    })
+    .finally(() => {
+      spinner1.value = false
     })
 }
 const today = new Date()
 </script>
 <template>
   <div>
-    <h1 class="green">スコア編集:{{ today.getFullYear() }}/{{ today.getMonth() + 1 }}/{{ today.getDate() }}</h1>
+    <h1 class="green">スコア編集</h1>
     <div class="form-group row">
       <div class="col">
         <input class="form-control" type="url" id="url" placeholder="本日のスコアのURL" autofocus />
       </div>
       <div class="col">
-        <button class="btn btn-primary" @click="fetchData" :disabled="spinner">データ取得</button>
+        <button class="btn btn-primary" @click="fetchData" :disabled="spinner0">データ取得</button>
       </div>
       <div class="col">
-        <div v-show="spinner" class="spinner-border text-secondary" role="status" />
+        <div v-show="spinner0" class="spinner-border text-secondary" role="status" />
       </div>
     </div>
     <p>やること：</p>
@@ -130,6 +144,9 @@ const today = new Date()
       <li>ソート</li>
     </ol>
     <hr />
+    <h2 v-if="game.date" class="green">
+      {{ game.course }} {{ game.date.getFullYear() }}/{{ game.date.getMonth() + 1 }}/{{ game.date.getDate() }}
+    </h2>
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -185,10 +202,10 @@ const today = new Date()
         <button class="btn btn-success" @click="sort">ソート</button>
       </div>
       <div class="col">
-        <button class="btn btn-primary" @click="send" :disabled="spinner">送信</button>
+        <button class="btn btn-primary" @click="send" :disabled="spinner1">送信</button>
       </div>
       <div class="col">
-        <div v-show="spinner" class="spinner-border text-secondary" role="status" />
+        <div v-show="spinner1" class="spinner-border text-secondary" role="status" />
       </div>
     </div>
   </div>
