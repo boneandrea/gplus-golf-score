@@ -13,6 +13,7 @@ const fetchData = () => {
   }
   const apiUrl = 'http://localhost:5000/get'
   spinner0.value = true
+  members.value.splice(0, members.value.length)
   fetch(apiUrl, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
