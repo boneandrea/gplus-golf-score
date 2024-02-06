@@ -15,17 +15,16 @@ import re
 from database import *
 from util import *
 """
-Run:
-
-$ pip install -r requirements.e2e.txt
-$ pytest -sv test.py # print()あり テスト項目表示あり
-$ pytest -v test.py # print()なし テスト項目表示あり
-$ pytest test.py # silent
+マーシャルアイクラウド解析
+ホールバイホールからデータ取得
 """
 
 
 class marshalI:
     driver = None
+
+    def __init__(self, url):
+        self.url = url
 
     def init_browser(self):
         caps = webdriver.DesiredCapabilities.CHROME.copy()
@@ -38,25 +37,14 @@ class marshalI:
         driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(
         ).install()), options=options)  # 自動的にSeleniumとChromeバージョンを一致させる
 
-    def get_par(self):
-        self.init_browser()
-        driver.get(
-            "https://v2anegasaki.igolfshaper.com/anegasaki/score/2nf6slre#/landscape-a")
-        wait = WebDriverWait(driver, timeout=5)
-        table = driver.find_elements(By.CSS_SELECTOR, ".sheet table")[0]
-        tr = table.find_elements(By.TAG_NAME, "tr")
-        td = tr[3].find_elements(By.TAG_NAME, "td")
-        par = []
-        for t in td:
-            par.append(int(t.get_attribute("innerText")))
+    def get_par(self, table):
+        tr = table.find_elements(By.CSS_SELECTOR, "thead tr")[1]
+        th = tr.find_elements(By.TAG_NAME, "th")
+        return list(map(lambda e: int(e.get_attribute("innerText")), th))
 
-        par.pop(9)
-        par.pop(18)
-        return par
-
-    def get_scores(self, url):
+    def get_scores(self):
         self.init_browser()
-        driver.get(url)
+        driver.get(self.url)
         wait = WebDriverWait(driver, timeout=5)
         table = driver.find_element(
             By.CSS_SELECTOR, "table.holebyholeTable")
@@ -67,7 +55,7 @@ class marshalI:
         m = re.match(r'((.|\s)*)プレー日：((.|\s)*)', d)
         course = m[1].strip()
         date = m[3].strip()
-        par = self.get_par()
+        par = self.get_par(table)
         from datetime import datetime
         import dateutil.parser
         date = datetime.strptime(date, "%Y年%m月%d日").strftime("%Y/%m/%d")

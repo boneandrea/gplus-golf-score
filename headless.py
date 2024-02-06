@@ -57,12 +57,13 @@ parser.add_argument('url')
 args = parser.parse_args()
 
 x = None
+
 if args.igolf:
-    x = igolf()
+    x = igolf(args.url)
 
 if args.marshali:
-    x = marshalI()
+    x = marshalI(args.url)
 
-scores = x.get_scores(args.url)
+scores = x.get_scores()
 print(json.dumps(scores, indent=2, ensure_ascii=False, default=json_serial))
 store_score(scores)
