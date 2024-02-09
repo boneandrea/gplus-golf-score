@@ -13,6 +13,8 @@ env = Environment(
 #    レンダリング結果はファイルに出力する。
 template = env.get_template('index.html')
 x = total()
+p = x.count_prizes()
+print(p)
 # print(x.create_html_data())
 
 result = template.render(

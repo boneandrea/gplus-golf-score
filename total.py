@@ -82,6 +82,7 @@ class total:
     def count_prize(self, games, prize):
         games.rewind()
         print("================lookup ", prize)
+        all_prize = {}
         for game in games:
             for scores in game["scores"]:
                 prizes = filter(lambda x: x["prize"] == prize,
@@ -89,6 +90,10 @@ class total:
                 count_prize = len(list(prizes))
                 if count_prize > 0:
                     print(scores["name"], prize, count_prize)
+                    if scores["name"] in all_prize:
+                        all_prize[scores["name"]] += f" {prize} {count_prize}回"
+
+        return all_prize
 
     def create_html_data(self):
         return self.sort_by_gross()
