@@ -1,3 +1,11 @@
+PRIZE={
+    "HOLEINONE":"ホールインワン",
+    "ALBATROSS":"アルバトロス",
+    "EAGLE":"イーグル",
+    "BIRDIE":"バーディ",
+    "PAR":"パー",
+}
+
 def prize(par, score):
     if score == 1:
         return "HOLEINONE"

@@ -1,4 +1,5 @@
 from database import *
+from util import *
 import sys
 from datetime import datetime
 
@@ -21,7 +22,6 @@ class total:
             }
         }
         games = self.collect_score(query)
-        print(len(games))
         average_gross = {}
         point_ranking = {}
         for game in games:
@@ -90,13 +90,14 @@ class total:
         all_prize=self.count_prize(games, "ALBATROSS",all_prize=all_prize)
         all_prize=self.count_prize(games, "EAGLE",all_prize=all_prize)
         all_prize=self.count_prize(games, "BIRDIE",all_prize=all_prize)
+        all_prize=self.count_prize(games, "PAR",all_prize=all_prize)
 
         result={}
         for name in all_prize:
-            str=""
+            prizes=[]
             for prize in all_prize[name]:
-                str+=f"{prize} {all_prize[name][prize]} "
-            result[name]=str.strip()
+                prizes.append(f"{PRIZE[prize]} {all_prize[name][prize]}")
+            result[name]=", ".join(prizes)
         return result
 
     def count_prize(self, games, prize, all_prize={}):
