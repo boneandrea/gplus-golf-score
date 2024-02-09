@@ -13,15 +13,14 @@ env = Environment(
 #    レンダリング結果はファイルに出力する。
 template = env.get_template('index.html')
 x = total()
-_data=x.create_html_data()
+data=x.create_html_data()
 prizes = x.count_prizes()
-r=x.merge_prizes(_data["result"],prizes)
-print(r)
+players=x.merge_prizes(data["result"],prizes)
 
 result = template.render(
     title='ランキング:水曜ゴルフGP 2024',
-    data=r,#_data["result"],
-    bestscore=_data["bestscore"]
+    data=players,
+    bestscore=data["bestscore"]
 )
 with open('docs/index.html', 'w') as f:
     f.write(result)

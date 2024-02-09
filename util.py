@@ -4,6 +4,7 @@ PRIZE={
     "EAGLE":"イーグル",
     "BIRDIE":"バーディ",
     "PAR":"パー",
+    "nearpin":"ニアピン"
 }
 
 def prize(par, score):

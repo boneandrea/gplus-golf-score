@@ -81,7 +81,8 @@ class total:
     def merge_prizes(self, ranking, prizes):
         for player in ranking:
             if player["name"] in prizes:
-                player["prize_list"]=prizes[player["name"]]
+                player["prize_list"]=prizes[player["name"]]["text"]
+                player["nearpin"]=int(prizes[player["name"]]["nearpin"])
         return ranking
 
     def count_prizes(self):
@@ -96,29 +97,46 @@ class total:
         for name in all_prize:
             prizes=[]
             for prize in all_prize[name]:
-                prizes.append(f"{PRIZE[prize]} {all_prize[name][prize]}")
-            result[name]=", ".join(prizes)
+                if prize == "nearpin":
+                    pass
+                else:
+                    prizes.append(f"{PRIZE[prize]} {all_prize[name][prize]}")
+
+            result[name]={
+                "text":", ".join(prizes),
+                "nearpin": all_prize[name]["nearpin"]
+            }
         return result
 
     def count_prize(self, games, prize, all_prize={}):
-        print(f"===== {len(games)} games; =========== lookup [{prize}]")
         for game in games:
             count_prize=0
             for scores in game["scores"]:
+                nearpin=0
+                name=scores["name"]
+                if "near0" in scores:
+                    nearpin+=1
+                if "near1" in scores:
+                    nearpin+=1
+                if "near2" in scores:
+                    nearpin+=1
+                if "near3" in scores:
+                    nearpin+=1
+
                 prizes = filter(lambda x: x["prize"] == prize,
                                 scores["score"])
                 count_prize= len(list(prizes))
-                name=scores["name"]
-                if count_prize == 0:
-                    continue
 
-                if name in all_prize:
+                if not name in all_prize:
+                    all_prize[name]={}
+
+                if count_prize > 0:
                     if prize in all_prize[name]:
                         all_prize[name][prize]+=count_prize
                     else:
                         all_prize[name][prize]=count_prize
-                else:
-                    all_prize[name]={prize:count_prize}
+
+                all_prize[name]["nearpin"]=nearpin
 
         return all_prize
 
