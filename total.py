@@ -91,7 +91,6 @@ class total:
         all_prize=self.count_prize(games, "ALBATROSS",all_prize=all_prize)
         all_prize=self.count_prize(games, "EAGLE",all_prize=all_prize)
         all_prize=self.count_prize(games, "BIRDIE",all_prize=all_prize)
-        all_prize=self.count_prize(games, "PAR",all_prize=all_prize)
 
         result={}
         for name in all_prize:
