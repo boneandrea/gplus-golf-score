@@ -78,13 +78,18 @@ class total:
             self.db.score.update_one(
                 {"_id": game["_id"]}, {"$set": {"scores": game["scores"]}})
 
+    def merge_prizes(self, ranking, prizes):
+        for player in ranking:
+            if player["name"] in prizes:
+                player["prize_list"]=prizes[player["name"]]
+        return ranking
+
     def count_prizes(self):
         games = self.collect_score()
         all_prize=self.count_prize(games, "HOLEINONE")
         all_prize=self.count_prize(games, "ALBATROSS",all_prize=all_prize)
         all_prize=self.count_prize(games, "EAGLE",all_prize=all_prize)
         all_prize=self.count_prize(games, "BIRDIE",all_prize=all_prize)
-        all_prize=self.count_prize(games, "PAR",all_prize=all_prize)
 
         result={}
         for name in all_prize:
