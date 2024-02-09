@@ -12,6 +12,7 @@ class total:
         return self.db.score.find(query)
 
     def sort_by_gross(self):
+        bestscore={"name":"","gross":300}
         query = {
             "date":
             {
@@ -31,6 +32,10 @@ class total:
 
                 name = scores["name"]
                 gross = int(scores["gross"])
+                if gross < bestscore["gross"]:
+                    bestscore["gross"]=gross
+                    bestscore["name"]=name
+
                 if name in average_gross:
                     average_gross[name]["gross"] += gross
                     average_gross[name]["game_count"] += 1
@@ -62,7 +67,7 @@ class total:
                 "gross": player["average"],
                 "point": player["point"]
             })
-        return result
+        return {"result":result,"bestscore":bestscore}
 
     def set_best_gross(self):
         games = self.collect_score()

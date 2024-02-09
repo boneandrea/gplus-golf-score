@@ -17,9 +17,12 @@ p = x.count_prizes()
 print(p)
 # print(x.create_html_data())
 
+_data=x.create_html_data()
+
 result = template.render(
     title='ランキング:水曜ゴルフGP 2024',
-    data=x.create_html_data()
+    data=_data["result"],
+    bestscore=_data["bestscore"]
 )
 with open('docs/index.html', 'w') as f:
     f.write(result)
