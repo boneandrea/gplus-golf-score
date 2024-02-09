@@ -18,7 +18,8 @@ prizes = x.count_prizes()
 players=x.merge_prizes(data["result"],prizes)
 
 result = template.render(
-    title='ランキング:水曜ゴルフGP 2024',
+    title='ランキング: 水曜ゴルフGP 2024',
+    msg="",
     data=players,
     bestscore=data["bestscore"]
 )
