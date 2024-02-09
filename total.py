@@ -9,7 +9,7 @@ class total:
     def collect_score(self, query=None):
         client = database().connect_db()
         self.db = client["score"]
-        return self.db.score.find(query)
+        return list(self.db.score.find(query))
 
     def sort_by_gross(self):
         bestscore={"name":"","gross":300}
@@ -21,6 +21,7 @@ class total:
             }
         }
         games = self.collect_score(query)
+        print(len(games))
         average_gross = {}
         point_ranking = {}
         for game in games:
@@ -79,24 +80,39 @@ class total:
 
     def count_prizes(self):
         games = self.collect_score()
-        self.count_prize(games, "HOLEINONE")
-        self.count_prize(games, "ALBATROSS")
-        self.count_prize(games, "EAGLE")
-        self.count_prize(games, "BIRDIE")
+        all_prize=self.count_prize(games, "HOLEINONE")
+        all_prize=self.count_prize(games, "ALBATROSS",all_prize=all_prize)
+        all_prize=self.count_prize(games, "EAGLE",all_prize=all_prize)
+        all_prize=self.count_prize(games, "BIRDIE",all_prize=all_prize)
+        all_prize=self.count_prize(games, "PAR",all_prize=all_prize)
 
-    def count_prize(self, games, prize):
-        games.rewind()
-        print("================lookup ", prize)
-        all_prize = {}
+        result={}
+        for name in all_prize:
+            str=""
+            for prize in all_prize[name]:
+                str+=f"{prize} {all_prize[name][prize]} "
+            result[name]=str.strip()
+        return result
+
+    def count_prize(self, games, prize, all_prize={}):
+        print(f"===== {len(games)} games; =========== lookup [{prize}]")
         for game in games:
+            count_prize=0
             for scores in game["scores"]:
                 prizes = filter(lambda x: x["prize"] == prize,
                                 scores["score"])
-                count_prize = len(list(prizes))
-                if count_prize > 0:
-                    print(scores["name"], prize, count_prize)
-                    if scores["name"] in all_prize:
-                        all_prize[scores["name"]] += f" {prize} {count_prize}回"
+                count_prize= len(list(prizes))
+                name=scores["name"]
+                if count_prize == 0:
+                    continue
+
+                if name in all_prize:
+                    if prize in all_prize[name]:
+                        all_prize[name][prize]+=count_prize
+                    else:
+                        all_prize[name][prize]=count_prize
+                else:
+                    all_prize[name]={prize:count_prize}
 
         return all_prize
 
