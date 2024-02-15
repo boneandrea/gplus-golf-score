@@ -7,8 +7,6 @@ import os
 import sys
 import re
 from database import *
-from igolf import *
-from marshalI import *
 
 
 def fix_date():

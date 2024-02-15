@@ -56,7 +56,6 @@
                                 <th scope="col">#</th>
                                 <th scope="col">名前</th>
                                 <th scope="col">ポイント</th>
-                                <th scope="col">平均グロス</th>
                                 <th scope="col">参加回数</th>
                                 <th scope="col">ニアピン</th>
                                 <th scope="col">特記事項</th>
@@ -68,7 +67,6 @@
                                 <th scope="row">{{ user.rank }}</th>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.point }}</td>
-                                <td>{{ user.gross }}</td>
                                 <td>{{ user.game_count }}</td>
                                 <td>{{ user.nearpin if user.nearpin > 0 else "" }}</td>
                                 <td>{{ user.prize_list }}</td>
