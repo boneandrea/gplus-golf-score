@@ -73,14 +73,49 @@ class total:
         sorted_score = sorted(to_sort, key=lambda x: x["point"], reverse=True)
         result = []
         for index, player in enumerate(sorted_score):
+            rank, tie = self.calculate_rank(index, sorted_score)
+            rank_str = f"{rank}T" if tie else f"{rank}"
             result.append({
-                "rank": index+1,
+                "rank": rank_str,
                 "name": player["name"],
                 "game_count": player["game_count"],
                 "gross": player["average"],
                 "point": player["point"]
             })
         return {"result": result, "bestscore": bestscore}
+
+    def calculate_rank(self, index, sorted_score):
+        rank = 0
+        point = 100000
+        last_point = 0
+        tie = False
+        count = len(sorted_score)
+        print(count)
+        for i, player in enumerate(sorted_score):
+            print(f"L={last_point} {rank}")
+            if i > index:
+                print(f"a4  => {rank}")
+                return rank, tie
+
+            if i == 0:
+                rank = 1
+                last_point = player["point"]
+                continue
+
+            if player["point"] == last_point:
+                tie = True
+                print("a1")
+            else:
+                print("a2")
+                tie = False
+                last_point = player["point"]
+                rank = i+1
+
+            if i < count - 1:
+                if sorted_score[i+1]["point"] == player["point"]:
+                    tie = True
+
+        return rank, tie
 
     def set_best_gross(self):
         games = self.collect_score()
