@@ -13,9 +13,9 @@ env = Environment(
 #    レンダリング結果はファイルに出力する。
 template = env.get_template('index.html')
 x = total()
-data=x.create_html_data()
+data = x.create_html_data()
 prizes = x.count_prizes()
-players=x.merge_prizes(data["result"],prizes)
+players = x.merge_prizes(data["result"], prizes)
 
 result = template.render(
     title='ランキング: 水曜ゴルフGP 2024',
