@@ -90,11 +90,8 @@ class total:
         last_point = 0
         tie = False
         count = len(sorted_score)
-        print(count)
         for i, player in enumerate(sorted_score):
-            print(f"L={last_point} {rank}")
             if i > index:
-                print(f"a4  => {rank}")
                 return rank, tie
 
             if i == 0:
@@ -104,9 +101,7 @@ class total:
 
             if player["point"] == last_point:
                 tie = True
-                print("a1")
             else:
-                print("a2")
                 tie = False
                 last_point = player["point"]
                 rank = i+1
