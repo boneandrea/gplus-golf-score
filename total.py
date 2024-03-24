@@ -55,18 +55,13 @@ class total:
 
             point_by_game = sorted(point_by_game.items(), key=lambda kv:
                                    (kv[1]), reverse=True)
-            print(point_by_game)
             point_by_game = self.add_leaders_point(point_by_game)
-            print(point_by_game)
 
             for point in point_by_game:
                 name = point[0]
                 if not name in point_ranking:
                     point_ranking[name] = 0
                 point_ranking[name] += point[1]
-            print(point_ranking)
-
-        print(point_ranking)
 
         to_sort = []
         for name in average_gross:
@@ -183,7 +178,7 @@ class total:
 
 if __name__ == "__main__":
 
-    x= total()
+    x = total()
     x.set_best_gross()
     x.count_prizes()
     x.sort_by_gross()
