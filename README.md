@@ -53,6 +53,9 @@ https://www.hopes.host/blog/php-mongodb
 ## 困った
 Railway上のWeb mongodb UIからデータを直すと、dateがstringになる
 -> tool作る(lose)
+```
+python fix_isodate.py
+```
 
 # See also
 https://github.com/boneandrea/manage-golf-score
