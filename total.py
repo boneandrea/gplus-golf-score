@@ -110,7 +110,6 @@ class total:
 
     def count_prize(self, games, prize, all_prize={}):
         for game in games:
-            print(game["course"])
             count_prize = 0
             for scores in game["scores"]:
                 name = scores["name"]
@@ -136,17 +135,13 @@ class total:
     def find_nearpin(self, scores, name):
         nearpin = 0
         if "near0" in scores:
-            print(f"{name} near0")
             nearpin += 1
         if "near1" in scores:
-            print(f"{name} near1")
             nearpin += 1
         if "near2" in scores:
-            print(f"{name} near2")
             nearpin += 1
         if "near3" in scores:
-            print(f"{name} near3")
-            nearpin+=1
+            nearpin += 1
         return nearpin
 
     def create_html_data(self):
