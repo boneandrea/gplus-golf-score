@@ -29,6 +29,7 @@ class total:
         average_gross = {}
         point_ranking = {}
         for game in games:
+            point_by_game = {}
             for scores in game["scores"]:
                 if "point" in scores:
                     point = scores["point"]
@@ -50,10 +51,22 @@ class total:
                         "gross": gross,
                         "game_count": 1
                     }
-                if name in point_ranking:
-                    point_ranking[name] += point
-                else:
-                    point_ranking[name] = point
+                point_by_game[name] = point
+
+            point_by_game = sorted(point_by_game.items(), key=lambda kv:
+                                   (kv[1]), reverse=True)
+            print(point_by_game)
+            point_by_game = self.add_leaders_point(point_by_game)
+            print(point_by_game)
+
+            for point in point_by_game:
+                name = point[0]
+                if not name in point_ranking:
+                    point_ranking[name] = 0
+                point_ranking[name] += point[1]
+            print(point_ranking)
+
+        print(point_ranking)
 
         to_sort = []
         for name in average_gross:
@@ -158,13 +171,19 @@ class total:
             nearpin += 1
         return nearpin
 
+    def add_leaders_point(self, points):
+        points[0] = (points[0][0], points[0][1]+5)
+        points[1] = (points[1][0], points[1][1]+3)
+        points[2] = (points[2][0], points[2][1]+1)
+        return points
+
     def create_html_data(self):
         return self.sort_by_gross()
 
 
 if __name__ == "__main__":
 
-    x = total()
+    x= total()
     x.set_best_gross()
     x.count_prizes()
     x.sort_by_gross()
