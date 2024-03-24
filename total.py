@@ -7,21 +7,25 @@ from datetime import datetime
 class total:
     db = None
 
-    def collect_score(self, query=None):
+    def collect_score(self, query={}):
         client = database().connect_db()
         self.db = client["score"]
-        return list(self.db.score.find(query))
+        default_query = self.default_query()
+        default_query.update(query)
+        return list(self.db.score.find(default_query))
 
-    def sort_by_gross(self):
-        bestscore = {"name": "", "gross": 300}
-        query = {
+    def default_query(self):
+        return {
             "date":
             {
                 "$gte": datetime(2023, 1, 1),
                 "$lt": datetime(2025, 1, 1)
             }
         }
-        games = self.collect_score(query)
+
+    def sort_by_gross(self):
+        bestscore = {"name": "", "gross": 300}
+        games = self.collect_score()
         average_gross = {}
         point_ranking = {}
         for game in games:
@@ -92,6 +96,7 @@ class total:
         all_prize = self.count_prize(games, "ALBATROSS", all_prize=all_prize)
         all_prize = self.count_prize(games, "EAGLE", all_prize=all_prize)
         all_prize = self.count_prize(games, "BIRDIE", all_prize=all_prize)
+        all_prize = self.count_nearpin(games, all_prize=all_prize)
 
         result = {}
         for name in all_prize:
@@ -127,12 +132,21 @@ class total:
                     else:
                         all_prize[name][prize] = count_prize
 
-                nearpin = self.find_nearpin(scores, name)
-                all_prize[name]["nearpin"] = nearpin
-
         return all_prize
 
-    def find_nearpin(self, scores, name):
+    def count_nearpin(self, games, all_prize={}):
+        for game in games:
+            count_prize = 0
+            for scores in game["scores"]:
+                name = scores["name"]
+                nearpin = self.find_nearpin(scores)
+
+                if not "nearpin" in all_prize[name]:
+                    all_prize[name]["nearpin"] = 0
+                all_prize[name]["nearpin"] += nearpin
+        return all_prize
+
+    def find_nearpin(self, scores):
         nearpin = 0
         if "near0" in scores:
             nearpin += 1
