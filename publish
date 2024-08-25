@@ -4,10 +4,13 @@
 cd `dirname $0`
 set -e
 
+COMMENT=${1:-Update score}
+
 source gplus/bin/activate
 
 python update.py
 
-COMMENT=${1:-Update score}
+ssh-add /var/www/id_rsa_github
+
 git add docs
 git commit -m "$COMMENT" && git push
