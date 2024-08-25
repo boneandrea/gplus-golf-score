@@ -10,7 +10,7 @@ source gplus/bin/activate
 
 python update.py
 
-ssh-add /var/www/id_rsa_github
+ssh-add ~/golf/webpage/gplus/www/id_rsa_github
 
 git add docs
 git commit -m "$COMMENT" && git push
