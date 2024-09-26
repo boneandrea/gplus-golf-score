@@ -23,5 +23,21 @@ result = template.render(
     data=players,
     bestscore=data["bestscore"]
 )
-with open('docs/index.html', 'w') as f:
+
+import datetime
+year = datetime.date.today().year
+
+import os
+dir="docs/%s" % year
+#print(dir)
+if os.path.isdir(dir):
+    pass
+else:
+    os.mkdir(dir)
+
+path="%s/index.html" % dir
+#print(path)
+
+
+with open(path, 'w') as f:
     f.write(result)
