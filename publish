@@ -10,6 +10,8 @@ source gplus/bin/activate
 
 python update.py
 
+eval `ssh-agent`
+ls ~/golf/webpage/gplus/www/id_rsa_github
 ssh-add ~/golf/webpage/gplus/www/id_rsa_github
 
 git add docs
