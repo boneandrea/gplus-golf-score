@@ -61,7 +61,7 @@ class total:
                 name = point[0]
                 if not name in point_ranking:
                     point_ranking[name] = 0
-                point_ranking[name] += point[1]
+                point_ranking[name] += point[1]*self.multiply_value(game)
 
         to_sort = []
         for name in average_gross:
@@ -83,6 +83,15 @@ class total:
                 "point": player["point"]
             })
         return {"result": result, "bestscore": bestscore}
+
+    def multiply_value(self, game):
+        month = game["date"].month
+
+        if month == 11:
+            return 2
+        if month == 12:
+            return 2
+        return 1
 
     def calculate_rank(self, index, sorted_score):
         rank = 0
