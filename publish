@@ -10,7 +10,7 @@ COMMENT=${1:-Update score}
 
 source gplus/bin/activate
 
-python update.py
+python update.py $@
 
 eval `ssh-agent`
 ls ~/golf/webpage/gplus/www/id_rsa_github
