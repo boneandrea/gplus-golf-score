@@ -45,10 +45,11 @@ class total:
 
                 name = scores["name"]
                 gross = int(scores["gross"])
+                self.log(gross, "BBGG", name)
                 if gross < bestscore["gross"]:
                     bestscore["gross"] = gross
                     bestscore["name"] = name
-
+                    self.log(gross, name, "BG")
                 if name in average_gross:
                     average_gross[name]["gross"] += gross
                     average_gross[name]["game_count"] += 1
@@ -81,6 +82,7 @@ class total:
             to_sort.append(average_gross[name])
 
         sorted_score = sorted(to_sort, key=lambda x: x["point"], reverse=True)
+        self.log(sorted_score)
         result = []
         for index, player in enumerate(sorted_score):
             rank, tie = self.calculate_rank(index, sorted_score)
@@ -95,12 +97,14 @@ class total:
         return {"result": result, "bestscore": bestscore}
 
     def multiply_value(self, game):
+        year = game["date"].year
         month = game["date"].month
 
-        if month == 11:
-            return 2
-        if month == 12:
-            return 2
+        if year == 2024:
+            if month == 11:
+                return 2
+            if month == 12:
+                return 2
         return 1
 
     def calculate_rank(self, index, sorted_score):
