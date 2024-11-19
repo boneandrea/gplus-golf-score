@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# これはhttpで叩かれる
+# local実行ではない
 
 cd `dirname $0`
 set -e

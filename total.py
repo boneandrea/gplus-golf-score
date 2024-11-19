@@ -7,6 +7,13 @@ from datetime import datetime
 class total:
     db = None
 
+    def __init__(self, verbose):
+        self.verbose = verbose
+
+    def log(self, *msg):
+        if self.verbose:
+            print(*msg)
+
     def collect_score(self, query={}):
         client = database().connect_db()
         self.db = client["score"]
@@ -61,7 +68,10 @@ class total:
                 name = point[0]
                 if not name in point_ranking:
                     point_ranking[name] = 0
-                point_ranking[name] += point[1]
+                point_ranking[name] += point[1]*self.multiply_value(game)
+                self.log(name, point[1])
+
+            self.log(point_ranking)
 
         to_sort = []
         for name in average_gross:
@@ -83,6 +93,15 @@ class total:
                 "point": player["point"]
             })
         return {"result": result, "bestscore": bestscore}
+
+    def multiply_value(self, game):
+        month = game["date"].month
+
+        if month == 11:
+            return 2
+        if month == 12:
+            return 2
+        return 1
 
     def calculate_rank(self, index, sorted_score):
         rank = 0
