@@ -1,5 +1,14 @@
+from datetime import date
+import os
+import sys
 from jinja2 import Environment, FileSystemLoader
 from total import *
+
+args = sys.argv
+verbose = False
+if len(args) > 1:
+    if args[1] == "-v":
+        verbose = True
 
 # 1. テンプレートファイルの場所と、レンダリング時のtrim設定を行う。
 #    Environmentクラスはjinja2の中心的なクラスで、以下のように
@@ -12,7 +21,8 @@ env = Environment(
 # 2. テンプレートファイルを取得しレンダリングする。
 #    レンダリング結果はファイルに出力する。
 template = env.get_template('index.html')
-x = total()
+
+x = total(verbose)
 data = x.create_html_data()
 prizes = x.count_prizes()
 players = x.merge_prizes(data["result"], prizes)
@@ -24,20 +34,16 @@ result = template.render(
     bestscore=data["bestscore"]
 )
 
-import datetime
-year = datetime.date.today().year
 
-import os
-dir="docs/%s" % year
-#print(dir)
+year = date.today().year
+dir = "docs/%s" % year
+
 if os.path.isdir(dir):
     pass
 else:
     os.mkdir(dir)
 
-path="%s/index.html" % dir
-#print(path)
-
+path = "%s/index.html" % dir
 
 with open(path, 'w') as f:
     f.write(result)
