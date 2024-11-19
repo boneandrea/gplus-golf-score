@@ -6,8 +6,7 @@ set -e
 
 COMMENT=${1:-Update score}
 
-# requirements: python3.11
-# source gplus/bin/activate
+source gplus/bin/activate
 
 python update.py
 
