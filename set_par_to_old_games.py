@@ -23,17 +23,18 @@ def fix_par():
         for player in game["scores"]:
             for score in player["score"]:
                 par = -1
-                if score["prize"] == "PAR":
+                prize = score.get("prize")
+                if prize == "PAR":
                     par = score["score"]
-                elif score["prize"] == "BOGEY":
+                elif prize == "BOGEY":
                     par = score["score"]-1
-                elif score["prize"] == "DOUBLEBOGEY":
+                elif prize == "DOUBLEBOGEY":
                     par = score["score"]-2
-                elif score["prize"] == "TRIPLEBOGEY":
+                elif prize == "TRIPLEBOGEY":
                     par = score["score"]-3
-                elif score["prize"] == "BIRDIE":
+                elif prize == "BIRDIE":
                     par = score["score"]+1
-                elif score["prize"] == "EAGLE":
+                elif prize == "EAGLE":
                     par = score["score"]+2
 
                 if par != -1:
@@ -45,16 +46,19 @@ def fix_par():
             print("fail")
 
 
-def update_par(game_id, pars):
-    print(game_id, pars)
-    # score.update_one(
-    #     {
-    #         "_id": game_id
-    #     },
-    #     {
-    #         "$set": {"date": dateutil.parser.parse(game["date"])}
-    #     }
-    # )
+def update_par(game_id, par):
+    print(game_id, par)
+    client = database().connect_db()
+    db = client["score"]
+    score = db["score"]
+    score.update_one(
+        {
+            "_id": game_id
+        },
+        {
+            "$set": {"par": par}
+        }
+    )
 
 
 fix_par()
