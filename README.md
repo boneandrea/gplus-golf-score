@@ -57,5 +57,8 @@ Railway上のWeb mongodb UIからデータを直すと、dateがstringになる
 python fix_isodate.py
 ```
 
+# パー情報の保存
+古いデータにはパー情報を保存してなかったのでツール作った
+`4,3,4,4,5,3,4,4,4,....` みたいなやつ
 # See also
 https://github.com/boneandrea/manage-golf-score

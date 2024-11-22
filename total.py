@@ -83,6 +83,12 @@ class total:
 
         sorted_score = sorted(to_sort, key=lambda x: x["point"], reverse=True)
         self.log(sorted_score)
+
+        sorted_average = sorted(
+            to_sort, key=lambda x: x["average"], reverse=False)
+        for p in sorted_average:
+            self.log(p["name"], p["average"])
+
         result = []
         for index, player in enumerate(sorted_score):
             rank, tie = self.calculate_rank(index, sorted_score)
@@ -91,7 +97,7 @@ class total:
                 "rank": rank_str,
                 "name": player["name"],
                 "game_count": player["game_count"],
-                "gross": player["average"],
+                "average_gross": player["average"],
                 "point": player["point"]
             })
         return {"result": result, "bestscore": bestscore}
