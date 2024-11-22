@@ -67,6 +67,7 @@
                                 <th scope="col">参加回数</th>
                                 <th scope="col">ニアピン</th>
                                 <th scope="col">特記事項</th>
+                                <th scope="col">平均グロス</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,6 +84,7 @@
                                 <td>{{ user.game_count }}</td>
                                 <td>{{ user.nearpin if user.nearpin > 0 else "" }}</td>
                                 <td>{{ user.prize_list }}</td>
+                                <td>{{ user.average_gross }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
