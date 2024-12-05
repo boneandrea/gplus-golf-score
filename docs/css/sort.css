@@ -3,15 +3,17 @@
     background-repeat: no-repeat;
     background-position: center right;
 }
-.tablesorter-headerAsc {
+#table_sort .tablesorter-headerAsc {
     background-image: url('data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7');
     background-repeat: no-repeat;
     background-position: center right;
     border-bottom: #000 2px solid;
+    background-color: #7ef542;
 }
-.tablesorter-headerDesc {
+#table_sort .tablesorter-headerDesc {
     background-image: url('data:image/gif;base64,R0lGODlhFQAEAIAAACMtMP///yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7');
     background-repeat: no-repeat;
     background-position: center right;
     border-bottom: #000 2px solid;
+    background-color: #7ef542;
 }
