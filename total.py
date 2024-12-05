@@ -61,6 +61,16 @@ class total:
     def sort_merged_score_by_gross(self, scores):
 
         sorted_score = sorted(scores, key=lambda x: x["net"])
+        # repoint
+        point = len(sorted_score)
+        for s in sorted_score:
+            s["point"] = point
+            point -= 1
+
+        # 年齢を考慮
+        sorted_score[1]["point"] = 18
+        sorted_score[2]["point"] = 19
+
         for s in sorted_score:
             print(s)
         return scores
