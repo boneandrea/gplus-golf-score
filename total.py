@@ -78,10 +78,20 @@ class total:
         #     print(s)
         return sorted_score
 
+    def pick_gross_by_name(self, games, name):
+        for g in games:
+            for s in g["scores"]:
+                if s["name"] == name:
+                    print(s["gross"])
+
     def sort_by_gross(self):
         bestscore = {"name": "", "gross": 300}
         games = self.collect_score()
         games = self.merge_games(games)
+
+        # 個人抽出
+        self.pick_gross_by_name(games, "田中拓也")
+
         average_gross = {}
         point_ranking = {}
         for game in games:
