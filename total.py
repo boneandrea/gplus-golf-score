@@ -38,16 +38,17 @@ class total:
         ]
 
         arr = []
+        grouped_data = []
         for game in games:
             merge_target = False
-            grouped_data = []
             for group_game in GROUP_GAMES:
                 if game["_id"] in group_game:
                     merge_target = True
                     grouped_data.append(game)
+
             if merge_target and len(grouped_data) == 2:
                 grouped_data[0]["scores"].extend(grouped_data[1]["scores"])
-                merged_score = self.sort_merged_score_by_gross(
+                merged_score = self.sort_merged_score_by_net(
                     grouped_data[0]["scores"])
                 merged_game = {
                     "course": grouped_data[0]["course"],
@@ -55,14 +56,16 @@ class total:
                     "par": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     "scores": merged_score
                 }
+                grouped_data = []
                 arr.append(merged_game)
+            elif merge_target and len(grouped_data) == 1:
+                pass
             else:
                 arr.append(game)
 
         return arr
 
-    def sort_merged_score_by_gross(self, scores):
-
+    def sort_merged_score_by_net(self, scores):
         sorted_score = sorted(scores, key=lambda x: x["net"])
         # repoint
         point = len(sorted_score)
