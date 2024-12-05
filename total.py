@@ -1,7 +1,7 @@
-from database import *
-from util import *
-import sys
 from datetime import datetime
+import sys
+from util import *
+from database import *
 
 
 class total:
@@ -172,7 +172,7 @@ class total:
             if month == 11:
                 return 2
             if month == 12:
-                return 2
+                return 3
         return 1
 
     def calculate_rank(self, index, sorted_score):
