@@ -17,3 +17,12 @@
     border-bottom: #000 2px solid;
     background-color: #7ef542;
 }
+#table_sort .sorter-false {
+    background-image: none;
+}
+tbody tr:hover {
+    background: #def;
+}
+tr.top {
+    font-weight: bold;
+}
