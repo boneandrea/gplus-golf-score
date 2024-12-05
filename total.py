@@ -37,26 +37,29 @@ class total:
              ObjectId("67514306a7920826d0f13287")]
         ]
 
-        grouped_ids = []
-        grouped_data = []
+        arr = []
         for game in games:
+            merge_target = False
+            grouped_data = []
             for group_game in GROUP_GAMES:
                 if game["_id"] in group_game:
+                    merge_target = True
                     grouped_data.append(game)
+            if merge_target and len(grouped_data) == 2:
+                grouped_data[0]["scores"].extend(grouped_data[1]["scores"])
+                merged_score = self.sort_merged_score_by_gross(
+                    grouped_data[0]["scores"])
+                merged_game = {
+                    "course": grouped_data[0]["course"],
+                    "date": grouped_data[0]["date"],
+                    "par": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    "scores": merged_score
+                }
+                arr.append(merged_game)
+            else:
+                arr.append(game)
 
-        newId = ObjectId()
-        grouped_data[0]["scores"].extend(grouped_data[1]["scores"])
-        merged_score = self.sort_merged_score_by_gross(
-            grouped_data[0]["scores"])
-        merged_data = {
-            "course": grouped_data[0]["course"],
-            "date": grouped_data[0]["date"],
-            "par": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            "scores": merged_score
-        }
-        # print(merged_data)
-        sys.exit
-        return games
+        return arr
 
     def sort_merged_score_by_gross(self, scores):
 
@@ -71,9 +74,9 @@ class total:
         sorted_score[1]["point"] = 18
         sorted_score[2]["point"] = 19
 
-        for s in sorted_score:
-            print(s)
-        return scores
+        # for s in sorted_score:
+        #     print(s)
+        return sorted_score
 
     def sort_by_gross(self):
         bestscore = {"name": "", "gross": 300}
