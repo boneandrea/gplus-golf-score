@@ -20,8 +20,11 @@
 #table_sort .sorter-false {
     background-image: none;
 }
-tbody tr:hover {
+tbody tr:hover{
     background: #def;
+}
+thead th:hover:not(.sorter-false) {
+    background: #ddd;
 }
 tr.top {
     font-weight: bold;
