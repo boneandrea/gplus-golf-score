@@ -30,9 +30,45 @@ class total:
             }
         }
 
+    def merge_games(self, games):
+        from bson.objectid import ObjectId
+        GROUP_GAMES = [
+            [ObjectId("67513abda7920826d0f13285"),
+             ObjectId("67514306a7920826d0f13287")]
+        ]
+
+        grouped_ids = []
+        grouped_data = []
+        for game in games:
+            for group_game in GROUP_GAMES:
+                if game["_id"] in group_game:
+                    grouped_data.append(game)
+
+        newId = ObjectId()
+        grouped_data[0]["scores"].extend(grouped_data[1]["scores"])
+        merged_score = self.sort_merged_score_by_gross(
+            grouped_data[0]["scores"])
+        merged_data = {
+            "course": grouped_data[0]["course"],
+            "date": grouped_data[0]["date"],
+            "par": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "scores": merged_score
+        }
+        # print(merged_data)
+        sys.exit
+        return games
+
+    def sort_merged_score_by_gross(self, scores):
+
+        sorted_score = sorted(scores, key=lambda x: x["net"])
+        for s in sorted_score:
+            print(s)
+        return scores
+
     def sort_by_gross(self):
         bestscore = {"name": "", "gross": 300}
         games = self.collect_score()
+        games = self.merge_games(games)
         average_gross = {}
         point_ranking = {}
         for game in games:
@@ -100,6 +136,9 @@ class total:
                 "average_gross": player["average"],
                 "point": player["point"]
             })
+        import json
+        # print({"result": json.dumps(result, ensure_ascii=False),
+        # "bestscore": bestscore})
         return {"result": result, "bestscore": bestscore}
 
     def multiply_value(self, game):
