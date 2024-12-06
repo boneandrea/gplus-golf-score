@@ -87,13 +87,19 @@ class total:
                 if s["name"] == name:
                     print(s["gross"])
 
+    def pick_champion(self, games):
+        for game in games:
+            z=sorted(game["scores"], key=lambda x: x["point"],reverse=True)
+            print(z[0]["name"])
+
     def sort_by_gross(self):
         bestscore = {"name": "", "gross": 300}
         games = self.collect_score()
         games = self.merge_games(games)
 
         # 個人抽出
-        self.pick_gross_by_name(games, "田中拓也")
+        self.pick_gross_by_name(games, "根岸幸生")
+        self.pick_champion(games)
 
         average_gross = {}
         point_ranking = {}
