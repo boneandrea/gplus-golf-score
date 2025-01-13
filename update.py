@@ -27,15 +27,14 @@ data = x.create_html_data()
 prizes = x.count_prizes()
 players = x.merge_prizes(data["result"], prizes)
 
+year = date.today().year
 result = template.render(
-    title='ランキング: 水曜ゴルフGP 2024',
+    title=f"ランキング: 水曜ゴルフGP {year}",
     msg="",
     data=players,
     bestscore=data["bestscore"]
 )
 
-
-year = date.today().year
 dir = "docs/%s" % year
 
 if os.path.isdir(dir):

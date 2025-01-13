@@ -19,7 +19,6 @@ class total:
         self.db = client["score"]
         default_query = self.default_query()
         default_query.update(query)
-        print(default_query)
         return list(self.db.score.find(default_query))
 
     def default_query(self):
