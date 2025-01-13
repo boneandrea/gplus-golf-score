@@ -10,14 +10,13 @@ class total:
     def __init__(self, verbose):
         self.verbose = verbose
         self.client = database().connect_db()
+        self.db = self.client["score"]
 
     def log(self, *msg):
         if self.verbose:
             print(*msg)
 
     def collect_score(self, query={}):
-        client = database().connect_db()
-        self.db = client["score"]
         default_query = self.default_query()
         default_query.update(query)
         return list(self.db.score.find(default_query))
