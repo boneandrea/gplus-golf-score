@@ -9,6 +9,7 @@ class total:
 
     def __init__(self, verbose):
         self.verbose = verbose
+        self.client = database().connect_db()
 
     def log(self, *msg):
         if self.verbose:
@@ -98,9 +99,9 @@ class total:
         games = self.collect_score()
         games = self.merge_games(games)
 
-        # 個人抽出
-        self.pick_gross_by_name(games, "根岸幸生")
-        self.pick_champion(games)
+        # 個人抽出(for test)
+        # self.pick_gross_by_name(games, "根岸幸生")
+        # self.pick_champion(games)
 
         average_gross = {}
         point_ranking = {}
@@ -226,6 +227,17 @@ class total:
             if player["name"] in prizes:
                 player["prize_list"] = prizes[player["name"]]["text"]
                 player["nearpin"] = int(prizes[player["name"]]["nearpin"])
+
+        ranking = self.add_hdcp(ranking)
+        return ranking
+
+    def add_hdcp(self, ranking):
+        for player in ranking:
+            member_info = self.client["score"]["members"].find_one(
+                {"name": player["name"]})
+            hdcp = 777 if member_info is None else member_info["hdcp"]
+            player["hdcp"] = hdcp
+
         return ranking
 
     def count_prizes(self):
