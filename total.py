@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import sys
 from util import *
 from database import *
@@ -19,14 +19,16 @@ class total:
         self.db = client["score"]
         default_query = self.default_query()
         default_query.update(query)
+        print(default_query)
         return list(self.db.score.find(default_query))
 
     def default_query(self):
+        year = date.today().year
         return {
             "date":
             {
-                "$gte": datetime(2023, 1, 1),
-                "$lt": datetime(2025, 1, 1)
+                "$gte": datetime(year, 1, 1),
+                "$lt": datetime(year + 1, 1, 1)
             }
         }
 
@@ -89,7 +91,7 @@ class total:
 
     def pick_champion(self, games):
         for game in games:
-            z=sorted(game["scores"], key=lambda x: x["point"],reverse=True)
+            z = sorted(game["scores"], key=lambda x: x["point"], reverse=True)
             print(z[0]["name"])
 
     def sort_by_gross(self):
