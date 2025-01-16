@@ -41,6 +41,7 @@ year = date.today().year
 result = template.render(
     title=f"ランキング: 水曜ゴルフGP {year}",
     msg="",
+    year=year,
     data=players,
     bestscore=data["bestscore"]
 )

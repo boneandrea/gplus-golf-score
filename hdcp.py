@@ -20,6 +20,7 @@ class hdcp:
         year = date.today().year
         result = template.render(
             title=f"HDCP: 水曜ゴルフGP {year}",
+            year=year,
             msg="",
             members=members,
         )
