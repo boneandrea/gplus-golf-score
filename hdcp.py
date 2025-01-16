@@ -31,7 +31,7 @@ class hdcp:
         else:
             os.mkdir(dir)
 
-        path = "%s/docs.html" % dir
+        path = "%s/hdcp.html" % dir
 
         with open(path, 'w') as f:
             f.write(result)
