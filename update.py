@@ -3,6 +3,7 @@ import os
 import sys
 from jinja2 import Environment, FileSystemLoader
 from total import *
+from hdcp import *
 
 args = sys.argv
 verbose = False
@@ -17,6 +18,15 @@ env = Environment(
     loader=FileSystemLoader('templates'),
     trim_blocks=True
 )
+
+def update_hdcp(template):
+    x = hdcp()
+    x.update(template)
+
+
+template_hdcp = env.get_template('hdcp.html')
+update_hdcp(template_hdcp)
+#sys.exit(0)
 
 # 2. テンプレートファイルを取得しレンダリングする。
 #    レンダリング結果はファイルに出力する。
