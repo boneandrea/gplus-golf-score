@@ -234,7 +234,7 @@ class total:
         for player in ranking:
             member_info = self.client["score"]["members"].find_one(
                 {"name": player["name"]})
-            hdcp = 777 if member_info is None else member_info["hdcp"]
+            hdcp = 15 if member_info is None else member_info["hdcp"]
             player["hdcp"] = hdcp
 
         return ranking
