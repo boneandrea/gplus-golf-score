@@ -183,7 +183,7 @@ class total:
                 return 2
             if month == 12:
                 return 3
-        return 1
+        return game.get("rate") or 1
 
     def calculate_rank(self, index, sorted_score):
         rank = 0
