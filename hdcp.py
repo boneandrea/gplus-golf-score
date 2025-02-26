@@ -44,7 +44,29 @@ class hdcp:
 
     def update_hdcp(self):
         candidates = self.find_members_with_less_than_5games()
+        for member in candidates:
+            average = self.calculate_average_for_member(member)
+        # - [ ] calculate_average for each member
+        # - [ ] save
+        # - [ ] use smaller value
         print(candidates)
+
+    def calculate_average_for_member(self, member):
+        print("-------------")
+        print(member)
+        year = date.today().year
+        games = self.collect_score({
+            "date":
+            {
+                "$gte": datetime(year-1, 1, 1),
+            }
+        })
+        for game in games:
+            for score in game["scores"]:
+                if member["name"] == score["name"]:
+                    print(score)
+
+        return 0
 
     def collect_score(self, query={}):
         default_query = self.default_query()
@@ -72,6 +94,7 @@ class hdcp:
                 "$gte": datetime(year-1, 1, 1),
             }
         })
+        # - [ ] 参加者のみ
         members = list(self.db.members.find())
         target_members = {}
         for game in games:
@@ -84,9 +107,9 @@ class hdcp:
                         target_members[name] += 1
 
         less_members = []
-        for name, hdcp in target_members.items():
-            if hdcp < 5:
-                less_members.append({name: hdcp})
+        for name, count in target_members.items():
+            if count < 5:
+                less_members.append({"name": name, "count": count})
 
         return less_members
 
