@@ -46,9 +46,11 @@ class hdcp:
         candidates = self.find_members_with_less_than_5games()
         for member in candidates:
             average = self.calculate_average_for_member(member)
-        # - [ ] calculate_average for each member
-        # - [ ] save
+            hdcp = self.calc_hdcp(average)
+            print(hdcp)
+        # - [x] calculate_average for each member
         # - [ ] use smaller value
+        # - [ ] save
         print(candidates)
 
     def calculate_average_for_member(self, member):
@@ -58,15 +60,21 @@ class hdcp:
         games = self.collect_score({
             "date":
             {
-                "$gte": datetime(year-1, 1, 1),
+                "$gte": datetime(year - 1, 1, 1),
             }
         })
+        gross = 0
         for game in games:
             for score in game["scores"]:
                 if member["name"] == score["name"]:
-                    print(score)
+                    gross += score["gross"]
 
-        return 0
+        average = gross/member["count"]
+        print(gross, member["count"], average)
+        return average
+
+    def calc_hdcp(self, average):
+        return int((average - 72) * 0.7)
 
     def collect_score(self, query={}):
         default_query = self.default_query()
@@ -91,7 +99,7 @@ class hdcp:
         games = self.collect_score({
             "date":
             {
-                "$gte": datetime(year-1, 1, 1),
+                "$gte": datetime(year - 1, 1, 1),
             }
         })
         # - [ ] 参加者のみ
