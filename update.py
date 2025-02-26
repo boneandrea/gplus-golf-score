@@ -21,8 +21,8 @@ env = Environment(
 
 
 def update_hdcp(template):
-    x = hdcp()
-    x.update_html(template)
+    hdcp_handler = hdcp()
+    hdcp_handler.update_html(template)
 
 
 template_hdcp = env.get_template('hdcp.html')
