@@ -102,22 +102,26 @@ class total:
             }
         })
         members = list(self.db.members.find())
-        less_members = {}
+        target_members = {}
         for game in games:
             for member in members:
                 name = member["name"]
-                print(name)
                 if len(list(filter(lambda x: x["name"] == name, game["scores"]))) > 0:
-                    if name not in less_members:
-                        less_members[name] = 1
+                    if name not in target_members:
+                        target_members[name] = 1
                     else:
-                        less_members[name] += 1
+                        target_members[name] += 1
 
-        print(less_members)
-        pass
+        less_members = []
+        for name, hdcp in target_members.items():
+            if hdcp < 5:
+                less_members.append({name: hdcp})
+
+        return less_members
 
     def find_members_with_less_than_5games(self):
-        self.count_games_by_player()
+        less_members = self.count_games_by_player()
+        print(less_members)
 
     def sort_by_gross(self):
         bestscore = {"name": "", "gross": 300}
