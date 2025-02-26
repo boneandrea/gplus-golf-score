@@ -26,7 +26,6 @@ def update_hdcp(template):
 
 template_hdcp = env.get_template('hdcp.html')
 update_hdcp(template_hdcp)
-#sys.exit(0)
 
 # 2. テンプレートファイルを取得しレンダリングする。
 #    レンダリング結果はファイルに出力する。

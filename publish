@@ -8,10 +8,10 @@ set -e
 
 COMMENT=${1:-Update score}
 
-source gplus/bin/activate
+#source gplus/bin/activate
 
 python update.py $@
-
+exit
 eval `ssh-agent`
 ls ~/golf/webpage/gplus/www/id_rsa_github
 ssh-add ~/golf/webpage/gplus/www/id_rsa_github

@@ -36,7 +36,7 @@ class hdcp:
 
         with open(path, 'w') as f:
             f.write(result)
-        print(members)
+        # print(members)
 
 
     def collect_score(self, query={}):

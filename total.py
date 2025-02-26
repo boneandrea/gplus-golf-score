@@ -93,9 +93,37 @@ class total:
             z = sorted(game["scores"], key=lambda x: x["point"], reverse=True)
             print(z[0]["name"])
 
+    def count_games_by_player(self):
+        year = date.today().year
+        games=self.collect_score({
+            "date":
+            {
+                "$gte": datetime(year-1, 1, 1),
+            }
+        })
+        members=list(self.db.members.find())
+        less_members={}
+        for game in games:
+            for member in members:
+                name=member["name"]
+                print(name)
+                if len(list(filter(lambda x: x["name"] == name, game["scores"]))) >0 :
+                    if name not in less_members:
+                        less_members[name]=1
+                    else:
+                        less_members[name]+=1
+
+        print(less_members)
+        pass
+
+    def find_members_with_less_than_5games(self):
+        self.count_games_by_player()
+
     def sort_by_gross(self):
         bestscore = {"name": "", "gross": 300}
         games = self.collect_score()
+        self.find_members_with_less_than_5games()
+        sys.exit(0)
         games = self.merge_games(games)
 
         # 個人抽出(for test)
