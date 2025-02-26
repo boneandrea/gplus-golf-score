@@ -95,23 +95,23 @@ class total:
 
     def count_games_by_player(self):
         year = date.today().year
-        games=self.collect_score({
+        games = self.collect_score({
             "date":
             {
                 "$gte": datetime(year-1, 1, 1),
             }
         })
-        members=list(self.db.members.find())
-        less_members={}
+        members = list(self.db.members.find())
+        less_members = {}
         for game in games:
             for member in members:
-                name=member["name"]
+                name = member["name"]
                 print(name)
-                if len(list(filter(lambda x: x["name"] == name, game["scores"]))) >0 :
+                if len(list(filter(lambda x: x["name"] == name, game["scores"]))) > 0:
                     if name not in less_members:
-                        less_members[name]=1
+                        less_members[name] = 1
                     else:
-                        less_members[name]+=1
+                        less_members[name] += 1
 
         print(less_members)
         pass
@@ -337,9 +337,9 @@ class total:
         return nearpin
 
     def add_leaders_point(self, points):
-        points[0] = (points[0][0], points[0][1]+5)
-        points[1] = (points[1][0], points[1][1]+3)
-        points[2] = (points[2][0], points[2][1]+1)
+        points[0] = (points[0][0], points[0][1] + 5)
+        points[1] = (points[1][0], points[1][1] + 3)
+        points[2] = (points[2][0], points[2][1] + 1)
         return points
 
     def create_html_data(self):
