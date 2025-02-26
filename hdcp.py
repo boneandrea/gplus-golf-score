@@ -15,8 +15,9 @@ class hdcp:
         if self.verbose:
             print(*msg)
 
-    def update(self,template):
-        members=sorted(list(self.db.members.find()), key=lambda x: (x["hdcp"]))
+    def update_html(self, template):
+        members = sorted(list(self.db.members.find()),
+                         key=lambda x: (x["hdcp"]))
         year = date.today().year
         result = template.render(
             title=f"HDCP: 水曜ゴルフGP {year}",
@@ -36,8 +37,6 @@ class hdcp:
 
         with open(path, 'w') as f:
             f.write(result)
-        # print(members)
-
 
     def collect_score(self, query={}):
         default_query = self.default_query()

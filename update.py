@@ -19,9 +19,10 @@ env = Environment(
     trim_blocks=True
 )
 
+
 def update_hdcp(template):
     x = hdcp()
-    x.update(template)
+    x.update_html(template)
 
 
 template_hdcp = env.get_template('hdcp.html')
