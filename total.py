@@ -9,8 +9,8 @@ class total:
 
     def __init__(self, verbose):
         self.verbose = verbose
-        self.client = database().connect_db()
-        self.db = self.client["score"]
+        client = database().connect_db()
+        self.db = client["score"]
 
     def log(self, *msg):
         if self.verbose:
@@ -232,7 +232,7 @@ class total:
 
     def add_hdcp(self, ranking):
         for player in ranking:
-            member_info = self.client["score"]["members"].find_one(
+            member_info = self.db["members"].find_one(
                 {"name": player["name"]})
             hdcp = 15 if member_info is None else member_info["hdcp"]
             player["hdcp"] = hdcp
