@@ -44,10 +44,17 @@ class hdcp:
 
     def update_hdcp(self):
         candidates = self.find_members_with_less_than_5games()
+        print(candidates)
         for member in candidates:
             average = self.calculate_average_for_member(member)
             hdcp = self.calc_hdcp(average)
-            print(hdcp)
+            hdcp_in_db = self.db.members.find_one({"name": member["name"]})
+            print("CALCLATED HD:", hdcp)
+            member["hdcp"] = hdcp
+            if hdcp_in_db == None:
+                self.create_new_member(member)
+            else:
+                self.update_new_member(member, hdcp_in_db)
         # - [x] calculate_average for each member
         # - [ ] use smaller value
         # - [ ] save
@@ -55,7 +62,7 @@ class hdcp:
 
     def calculate_average_for_member(self, member):
         print("-------------")
-        print(member)
+        print("A", member)
         year = date.today().year
         games = self.collect_score({
             "date":
@@ -69,9 +76,18 @@ class hdcp:
                 if member["name"] == score["name"]:
                     gross += score["gross"]
 
-        average = gross/member["count"]
+        average = gross / member["count"]
         print(gross, member["count"], average)
         return average
+
+    def create_new_member(self, member):
+        del (member["count"])
+        print("------------> NEW MEMBER:", member)
+        self.db.members.insert_one(member)
+
+    def update_new_member(self, member, before):
+        del (member["count"])
+        print("------- 0.7,0.8は先？あと？-----> UPDATE MEMBER:", member, before)
 
     def calc_hdcp(self, average):
         return int((average - 72) * 0.7)
@@ -94,6 +110,12 @@ class hdcp:
     def find_members_with_less_than_5games(self):
         return self.count_games_by_player()
 
+    def find_members_last_game(self):
+        last_game = list(self.db.score.find().sort("date", -1).limit(1))
+        members = list(map(lambda x: x["name"], last_game[0]["scores"]))
+        print(members)
+        return members
+
     def count_games_by_player(self):
         year = date.today().year
         games = self.collect_score({
@@ -102,12 +124,12 @@ class hdcp:
                 "$gte": datetime(year - 1, 1, 1),
             }
         })
+        # TODO:
         # - [ ] 参加者のみ
-        members = list(self.db.members.find())
+        members = self.find_members_last_game()
         target_members = {}
         for game in games:
-            for member in members:
-                name = member["name"]
+            for name in members:
                 if len(list(filter(lambda x: x["name"] == name, game["scores"]))) > 0:
                     if name not in target_members:
                         target_members[name] = 1

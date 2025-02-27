@@ -20,13 +20,13 @@ env = Environment(
 )
 
 
-def update_hdcp(template):
+def update_hdcp_page(template):
     hdcp_handler = hdcp()
     hdcp_handler.update_html(template)
 
 
 template_hdcp = env.get_template('hdcp.html')
-update_hdcp(template_hdcp)
+update_hdcp_page(template_hdcp)
 
 # 2. テンプレートファイルを取得しレンダリングする。
 #    レンダリング結果はファイルに出力する。
