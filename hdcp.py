@@ -54,7 +54,7 @@ class hdcp:
             if hdcp_in_db == None:
                 self.create_new_member(member)
             else:
-                self.update_new_member(member, hdcp_in_db)
+                self.update_member(member, hdcp_in_db)
         # - [x] calculate_average for each member
         # - [ ] use smaller value
         # - [ ] save
@@ -85,9 +85,10 @@ class hdcp:
         print("------------> NEW MEMBER:", member)
         self.db.members.insert_one(member)
 
-    def update_new_member(self, member, before):
+    def update_member(self, member, before):
         del (member["count"])
         print("------- 0.7,0.8は先？あと？-----> UPDATE MEMBER:", member, before)
+        print(member["hdcp"], before["hdcp"])
 
     def calc_hdcp(self, average):
         return int((average - 72) * 0.7)
