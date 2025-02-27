@@ -148,8 +148,6 @@ class hdcp:
                 "$gte": datetime(year - 1, 1, 1),
             }
         })
-        # TODO:
-        # - [ ] 参加者のみ
         members = self.find_members_last_game()
         target_members = {}
         for game in games:
