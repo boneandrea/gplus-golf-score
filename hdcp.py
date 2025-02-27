@@ -48,7 +48,6 @@ class hdcp:
             average = self.calculate_average_for_member(member)
             hdcp = self.calc_hdcp(average)
             hdcp_in_db = self.db.members.find_one({"name": member["name"]})
-            print("CALCULATED HD:", hdcp)
             member["hdcp"] = hdcp
             if hdcp_in_db == None:
                 self.create_new_member(member)
@@ -60,7 +59,6 @@ class hdcp:
 
     def calculate_average_for_member(self, member):
         print("-------------")
-        print(member)
         year = date.today().year
         games = self.collect_score({
             "date":
@@ -75,7 +73,7 @@ class hdcp:
                     gross += score["gross"]
 
         average = gross / member["count"]
-        print(gross, member["count"], average)
+        #print(gross, member["count"], average)
         return average
 
     def create_new_member(self, member):
@@ -84,23 +82,33 @@ class hdcp:
 
     def update_member(self, member, before):
         del (member["count"])
-        print("------- 0.7,0.8は先？あと？-----> UPDATE MEMBER:", member, before)
-        rank=self.get_rank_today(member)
-        print(member["hdcp"], before["hdcp"], rank)
+        #print("------- 0.7,0.8は先？あと？-----> UPDATE MEMBER:", member, before)
+
+        top3=self.is_top3(member)
+        print(member, before)
+        if top3:
+            print("================================> TOP3 update")
+            hdcp=min(member["hdcp"], before["hdcp"])
+        else:
+            hdcp=member["hdcp"]
+
+        print(before["_id"], before["name"], "==>", hdcp)
+        self.db.members.update_one({"_id": before["_id"]}, {"$set": {"hdcp": hdcp}})
+
+    def is_top3(self, member):
+        return self.get_rank_today(member) <= 3
 
     def get_rank_today(self, member):
         last_game = self.get_last_game()
         sorted_result=sorted(last_game["scores"],key=lambda x: float(x["net"]))
-        print(",,,,",member["name"])
         rank=1
         found_rank=None
         for m in sorted_result:
-            print("rank", rank, m["name"],m["net"])
+            #print("rank", rank, m["name"],m["net"])
             if member["name"] == m["name"]:
                 found_rank=rank
                 break
             rank+=1
-        print("found", found_rank,m["name"],m["net"])
         return rank
 
     def calc_hdcp(self, average):
