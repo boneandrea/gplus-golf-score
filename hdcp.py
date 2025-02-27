@@ -40,7 +40,6 @@ class hdcp:
 
         # 5回未満の人は再計算
         self.update_hdcp()
-        sys.exit(0) # 18
 
     def update_hdcp(self):
         candidates = self.find_members_with_less_than_5games()
