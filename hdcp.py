@@ -40,16 +40,15 @@ class hdcp:
 
         # 5回未満の人は再計算
         self.update_hdcp()
-        sys.exit(0)
+        sys.exit(0) # 18
 
     def update_hdcp(self):
         candidates = self.find_members_with_less_than_5games()
-        print(candidates)
         for member in candidates:
             average = self.calculate_average_for_member(member)
             hdcp = self.calc_hdcp(average)
             hdcp_in_db = self.db.members.find_one({"name": member["name"]})
-            print("CALCLATED HD:", hdcp)
+            print("CALCULATED HD:", hdcp)
             member["hdcp"] = hdcp
             if hdcp_in_db == None:
                 self.create_new_member(member)
@@ -58,11 +57,10 @@ class hdcp:
         # - [x] calculate_average for each member
         # - [ ] use smaller value
         # - [ ] save
-        print(candidates)
 
     def calculate_average_for_member(self, member):
         print("-------------")
-        print("A", member)
+        print(member)
         year = date.today().year
         games = self.collect_score({
             "date":
@@ -82,13 +80,28 @@ class hdcp:
 
     def create_new_member(self, member):
         del (member["count"])
-        print("------------> NEW MEMBER:", member)
         self.db.members.insert_one(member)
 
     def update_member(self, member, before):
         del (member["count"])
         print("------- 0.7,0.8は先？あと？-----> UPDATE MEMBER:", member, before)
-        print(member["hdcp"], before["hdcp"])
+        rank=self.get_rank_today(member)
+        print(member["hdcp"], before["hdcp"], rank)
+
+    def get_rank_today(self, member):
+        last_game = self.get_last_game()
+        sorted_result=sorted(last_game["scores"],key=lambda x: float(x["net"]))
+        print(",,,,",member["name"])
+        rank=1
+        found_rank=None
+        for m in sorted_result:
+            print("rank", rank, m["name"],m["net"])
+            if member["name"] == m["name"]:
+                found_rank=rank
+                break
+            rank+=1
+        print("found", found_rank,m["name"],m["net"])
+        return rank
 
     def calc_hdcp(self, average):
         return int((average - 72) * 0.7)
@@ -111,9 +124,12 @@ class hdcp:
     def find_members_with_less_than_5games(self):
         return self.count_games_by_player()
 
+    def get_last_game(self):
+        return list(self.db.score.find().sort("date", -1).limit(1))[0]
+
     def find_members_last_game(self):
-        last_game = list(self.db.score.find().sort("date", -1).limit(1))
-        members = list(map(lambda x: x["name"], last_game[0]["scores"]))
+        last_game = self.get_last_game()
+        members = list(map(lambda x: x["name"], last_game["scores"]))
         print(members)
         return members
 
