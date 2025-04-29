@@ -76,6 +76,9 @@ class hdcp:
 
     def create_new_member(self, member):
         del (member["count"])
+        print("CREATE MEMBER:",member["name"])
+        member["updated"]=datetime.today()
+        # print(member)
         self.db.members.insert_one(member)
 
     def update_member(self, member, before):
@@ -92,7 +95,11 @@ class hdcp:
 
         print(before["_id"], before["name"], "==>", hdcp)
         self.db.members.update_one({"_id": before["_id"]}, {
-                                   "$set": {"hdcp": hdcp}})
+                                    "$set": {
+                                        "hdcp": hdcp,
+                                        "updated":datetime.today()
+                                    }
+        })
 
     def is_top3(self, member):
         return self.get_rank_today(member) <= 3
