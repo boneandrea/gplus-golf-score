@@ -76,14 +76,13 @@ class hdcp:
 
     def create_new_member(self, member):
         del (member["count"])
-        print("CREATE MEMBER:",member["name"])
-        member["updated"]=datetime.today()
+        print("CREATE MEMBER:", member["name"])
+        member["updated"] = datetime.today()
         # print(member)
         self.db.members.insert_one(member)
 
     def update_member(self, member, before):
         del (member["count"])
-        # print("------- 0.7,0.8は先？あと？-----> UPDATE MEMBER:", member, before)
 
         top3 = self.is_top3(member)
         print(member, before)
@@ -137,6 +136,7 @@ class hdcp:
         }
 
     def find_members_with_less_than_5games(self):
+        print("5回以下の人:")
         return self.count_games_by_player()
 
     def get_last_game(self):
