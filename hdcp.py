@@ -93,12 +93,6 @@ class hdcp:
             hdcp = member["hdcp"]
 
         print(before["_id"], before["name"], "==>", hdcp)
-        self.db.members.update_one({"_id": before["_id"]}, {
-                                    "$set": {
-                                        "hdcp": hdcp,
-                                        "updated":datetime.today()
-                                    }
-        })
 
     def is_top3(self, member):
         return self.get_rank_today(member) <= 3
