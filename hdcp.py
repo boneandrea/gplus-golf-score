@@ -136,7 +136,7 @@ class hdcp:
         }
 
     def find_members_with_less_than_5games(self):
-        print("5回以下の人:")
+        print("5回以下の人を以下から選択:")
         return self.count_games_by_player()
 
     def get_last_game(self):
