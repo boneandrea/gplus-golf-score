@@ -46,9 +46,11 @@
                                 <th scope="col" class="sorter-false">名前</th>
                                 <th scope="col">ポイント</th>
                                 <th scope="col">参加回数</th>
+                                <!--
                                 <th scope="col">ニアピン</th>
                                 <th scope="col" class="{sorter:'metadata'}">特記事項</th>
                                 <th scope="col">平均ストローク</th>
+                                -->
                                 <th scope="col">HDCP</th>
                             </tr>
                         </thead>
@@ -64,9 +66,11 @@
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.point }}</td>
                                 <td>{{ user.game_count }}</td>
+                                <!--
                                 <td>{{ user.nearpin if user.nearpin > 0 else "" }}</td>
                                 <td>{{ user.prize_list }}</td>
                                 <td>{{ user.average_gross }}</td>
+                                -->
                                 <td>{{ user.hdcp}}</td>
                             </tr>
                             {% endfor %}
