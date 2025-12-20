@@ -7,9 +7,12 @@ from hdcp import *
 
 args = sys.argv
 verbose = False
+hide_class = ""
 if len(args) > 1:
     if args[1] == "-v":
         verbose = True
+    if args[1] == "--hide":
+        hide_class = "d-none"
 
 # 1. テンプレートファイルの場所と、レンダリング時のtrim設定を行う。
 #    Environmentクラスはjinja2の中心的なクラスで、以下のように
@@ -43,7 +46,8 @@ result = template.render(
     msg="",
     year=year,
     data=players,
-    bestscore=data["bestscore"]
+    bestscore=data["bestscore"],
+    hide=hide_class
 )
 
 dir = "docs/%s" % year
