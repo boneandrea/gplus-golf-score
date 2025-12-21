@@ -6,11 +6,12 @@
 cd `dirname $0`
 set -e
 
-COMMENT=${1:-Update score}
+COMMENT=${2:-Update score}
+EASY=${1:-full}
 
 source gplus/bin/activate
 
-python update.py $@
+python update.py $EASY $@
 
 eval `ssh-agent`
 ls ~/golf/webpage/gplus/www/id_rsa_github
