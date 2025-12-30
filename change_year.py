@@ -14,19 +14,6 @@ def exec():
     db = client["score"]
     member_t = db["members"]
     score = db["score"]
-
-    import dateutil.parser
-
-    # print(member["hdcp"])
-    # if type(game["date"]) == str:
-    #     member.update_one(
-    #         {
-    #             "_id": game["_id"],
-    #         },
-    #         {
-    #             "$set": {"date": dateutil.parser.parse(game["date"])}
-    #         }
-    #     )
     games = get_data_by_target_year(score)
     average = {}
     for game in games:
@@ -46,11 +33,18 @@ def exec():
         if member == None:
             print(f"{name} is not found")
         else:
-            print(f"{name}: {member['hdcp']} -> NEW {hdcp[name]}")
-
-    # members=member_t.find()
-    # for member in members:
-    #     print(member)
+            new_hdcp = hdcp[name]
+            print(f"{name}: {member['hdcp']} -> NEW {new_hdcp}")
+            member_t.update_one(
+                {
+                    "_id": member["_id"],
+                },
+                {
+                    "$set": {
+                        "hdcp": new_hdcp
+                    }
+                }
+            )
 
 
 def get_data_by_target_year(score):
@@ -65,5 +59,15 @@ def get_data_by_target_year(score):
         }
     })
 
+
+if len(sys.argv) == 1:
+    print(f"Usage: {sys.argv[0]} newyear. exit.")
+    sys.exit()
+
+input(f"{sys.argv[1]} の年度切り替えです。OK? || ctrl-c")
+input(f"{sys.argv[1]} の年度切り替えです。OK? || ctrl-c")
+input(f"{sys.argv[1]} の年度切り替えです。OK? || ctrl-c")
+input(f"{sys.argv[1]} の年度切り替えです。OK? || ctrl-c")
+input(f"{sys.argv[1]} の年度切り替えです。OK? || ctrl-c")
 
 exec()
